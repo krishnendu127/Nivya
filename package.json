@@ -10,6 +10,9 @@
   "scripts": {
     "dev": "vite",
     "dev:api": "npm run dev -w @nivya/api",
+    "dev:stack": "npx --yes concurrently -n api,web -c blue,green \"npm run start:api\" \"npm run dev\"",
+    "screener:build": "npm run build-snapshot -w @nivya/screener-worker",
+    "test:screener": "npm run test -w @nivya/screener-core",
     "build": "vite build",
     "preview": "vite preview",
     "start:api": "npm run start -w @nivya/api"

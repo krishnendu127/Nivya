@@ -10,6 +10,7 @@
   "dependencies": {
     "@fastify/cors": "^11.0.1",
     "@nivya/compliance": "*",
+    "@nivya/screener-core": "*",
     "@nivya/vendor-mf": "*",
     "fastify": "^5.4.0"
   }

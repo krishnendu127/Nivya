@@ -9,7 +9,10 @@ import {
   recordConsent,
   submitOrder,
   submitSip,
+  buildPortfolioInsights,
+  illustrativeFutureValue,
 } from "./src/nivya-api.js";
+import FundInsights from "./src/FundInsights.jsx";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -226,7 +229,23 @@ const CSS = `
 @keyframes pop{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
 .tipbar{font-size:11px;color:var(--muted);text-align:center;margin-top:14px;font-weight:600;}
 .compliance-strip{background:#EAF7F3;border:1px solid #CDEDE3;border-radius:12px;padding:10px 12px;font-size:11px;
-  font-weight:600;color:var(--brand-ink);line-height:1.45;margin-bottom:14px;}
+  font-weight:600;color:#0B7E78;line-height:1.45;margin-bottom:14px;}
+.field-lbl{font-size:12px;font-weight:700;color:#667085;margin-bottom:6px;}
+.insight-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;box-shadow:var(--shadow);}
+.insight-card .ih{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+.insight-card .note{font-size:11px;color:var(--muted);font-weight:600;line-height:1.45;margin-top:10px;}
+.insight-stat{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line2);}
+.insight-stat:last-child{border-bottom:none;}
+.insight-stat .k{font-size:12px;font-weight:600;color:var(--muted);}
+.insight-stat .v{font-size:14px;font-weight:800;}
+.flag-row{font-size:12px;font-weight:600;color:var(--brand-ink);background:#EAF7F3;border:1px solid #CDEDE3;border-radius:10px;padding:8px 10px;margin-top:6px;line-height:1.4;}
+.rate-chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px;}
+.rate-chip{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);}
+.rate-chip.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+.range-row{margin:10px 0 4px;}
+.range-row input[type=range]{width:100%;accent-color:var(--brand);}
+.illustrative-val{font-size:26px;font-weight:800;color:var(--navy);margin:6px 0 2px;}
+@keyframes spin{to{transform:rotate(360deg);}}
 .sip-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);}
 .sip-card + .sip-card{margin-top:10px;}
 .sip-status{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;}
@@ -573,6 +592,9 @@ function Explore({ funds, navs, watch, openFund, toggleWatch }){
 }
 
 function Portfolio({ navs, holdings, openFund, fundById }){
+  const [illusYears, setIllusYears] = useState(5);
+  const [illusRate, setIllusRate] = useState(8);
+
   const data = useMemo(()=>{
     const pf = calcPortfolio(holdings, navs);
     const rows = holdings.map(h=>{
@@ -580,10 +602,14 @@ function Portfolio({ navs, holdings, openFund, fundById }){
       const value = h.units * q.nav; const cost = h.units * h.avgNav;
       return { h, f, q, value, cost, pnl: value - cost };
     }).sort((a,b)=>b.value-a.value);
-    return { ...pf, rows };
+    const insights = buildPortfolioInsights(holdings, fundById, navs);
+    return { ...pf, rows, insights };
   }, [holdings, navs, fundById]);
 
   const total = data.cur || 1;
+  const illusValue = illustrativeFutureValue(data.cur, illusYears, illusRate);
+  const illusGain = illusValue - data.cur;
+  const ratePresets = [6, 8, 10, 12];
 
   return (
     <div className="scroll">
@@ -595,12 +621,66 @@ function Portfolio({ navs, holdings, openFund, fundById }){
             {data.ret>=0?<TrendingUp size={13}/>:<TrendingDown size={13}/>}
             {signInr(data.ret)} ({signPct(data.retPct)})
           </span>
-          <span style={{opacity:.85,fontSize:12}}>Total returns</span>
+          <span style={{opacity:.85,fontSize:12}}>Total returns (cost basis)</span>
         </div>
         <div className="stats">
           <div className="st"><div className="k">Invested</div><div className="v num">{inr0(data.inv)}</div></div>
           <div className="st"><div className="k">1D change</div><div className="v num">{signInr(data.day)}</div></div>
           <div className="st"><div className="k">Schemes</div><div className="v num">{holdings.length}</div></div>
+        </div>
+      </div>
+
+      <ComplianceStrip />
+
+      <div className="section" style={{marginTop:12}}>
+        <div className="sec-head"><h3>Past performance (facts)</h3></div>
+        <div className="insight-card">
+          <div className="insight-stat">
+            <span className="k">Weighted fund 1Y CAGR</span>
+            <span className="v num up">
+              {data.insights.pastPerformance.weightedReturn1y != null
+                ? `${data.insights.pastPerformance.weightedReturn1y}%`
+                : "—"}
+            </span>
+          </div>
+          <div className="insight-stat">
+            <span className="k">Weighted fund 3Y CAGR</span>
+            <span className="v num up">
+              {data.insights.pastPerformance.weightedReturn3y != null
+                ? `${data.insights.pastPerformance.weightedReturn3y}%`
+                : "—"}
+            </span>
+          </div>
+          <div className="note">{data.insights.pastPerformance.note}</div>
+        </div>
+      </div>
+
+      {data.insights.concentration.flags.length > 0 && (
+        <div className="section" style={{marginTop:14}}>
+          <div className="sec-head"><h3>Concentration (facts)</h3></div>
+          <div className="insight-card">
+            {data.insights.concentration.flags.map((f)=>(
+              <div className="flag-row" key={f.code}>{f.text}</div>
+            ))}
+            <div className="note">Informational only — not a recommendation to rebalance.</div>
+          </div>
+        </div>
+      )}
+
+      <div className="section" style={{marginTop:14}}>
+        <div className="sec-head"><h3>Category mix</h3></div>
+        <div className="alloc">
+          {data.insights.allocation.byCategory.map((c,i)=>(
+            <i key={c.label} style={{width:`${c.weightPct}%`,background:avColor(c.label.slice(0,2) + i)}}/>
+          ))}
+        </div>
+        <div className="legend">
+          {data.insights.allocation.byCategory.map((c)=>(
+            <div className="lg" key={c.label}>
+              <span className="sw" style={{background:avColor(c.label.slice(0,2))}}/>
+              {c.label} · {c.weightPct}%
+            </div>
+          ))}
         </div>
       </div>
 
@@ -610,7 +690,7 @@ function Portfolio({ navs, holdings, openFund, fundById }){
       </div>
 
       <div className="section" style={{marginTop:18}}>
-        <div className="sec-head"><h3>Allocation</h3></div>
+        <div className="sec-head"><h3>Holdings by fund</h3></div>
         <div className="alloc">
           {data.rows.map(r=>(
             <i key={r.h.id} style={{width:`${(r.value/total)*100}%`,background:avColor(r.f.h)}}/>
@@ -623,6 +703,61 @@ function Portfolio({ navs, holdings, openFund, fundById }){
               {r.f.h} · {((r.value/total)*100).toFixed(0)}%
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="section" style={{marginTop:14}}>
+        <div className="sec-head"><h3>Illustrative calculator</h3></div>
+        <div className="insight-card">
+          <div className="field-lbl">Assumed annual return (you choose — not Nivya&apos;s forecast)</div>
+          <div className="rate-chips">
+            {ratePresets.map((r)=>(
+              <button
+                key={r}
+                type="button"
+                className={"rate-chip" + (illusRate === r ? " on" : "")}
+                onClick={()=>setIllusRate(r)}
+              >
+                {r}%
+              </button>
+            ))}
+          </div>
+          <div className="range-row">
+            <input
+              type="range"
+              min={0}
+              max={15}
+              step={0.5}
+              value={illusRate}
+              onChange={(e)=>setIllusRate(Number(e.target.value))}
+            />
+            <div style={{fontSize:12,fontWeight:700,color:"var(--muted)",marginTop:4}}>
+              {illusRate}% p.a. · illustrative only
+            </div>
+          </div>
+          <div className="field-lbl" style={{marginTop:12}}>Time horizon (years)</div>
+          <div className="range-row">
+            <input
+              type="range"
+              min={1}
+              max={15}
+              step={1}
+              value={illusYears}
+              onChange={(e)=>setIllusYears(Number(e.target.value))}
+            />
+            <div style={{fontSize:12,fontWeight:700,color:"var(--muted)",marginTop:4}}>{illusYears} years</div>
+          </div>
+          <div style={{marginTop:14,paddingTop:12,borderTop:"1px solid var(--line2)"}}>
+            <div className="field-lbl">If current value ({inr0(data.cur)}) grew at your chosen rate</div>
+            <div className="illustrative-val num">{inr0(illusValue)}</div>
+            <div style={{fontSize:13,fontWeight:700,color:illusGain>=0?"var(--up)":"var(--down)"}}>
+              Illustrative change: {signInr(illusGain)}
+            </div>
+          </div>
+          <div className="note">
+            Illustrative only — you chose the assumed rate. Not a forecast, not guaranteed, not investment advice.
+            Actual outcomes will differ. Mutual fund investments are subject to market risks.
+          </div>
         </div>
       </div>
 
@@ -894,6 +1029,7 @@ function BottomNav({ tab, go }){
   const items = [
     { k:"home", t:"Home", I:Home },
     { k:"explore", t:"Explore", I:Layers },
+    { k:"insights", t:"Insights", I:TrendingUp },
     { k:"portfolio", t:"Portfolio", I:Briefcase },
     { k:"sips", t:"SIPs", I:Repeat },
     { k:"profile", t:"Profile", I:User },
@@ -917,6 +1053,7 @@ export default function App(){
   const [balVis, setBalVis] = useState(true);
   const [funds, setFunds] = useState(FUNDS);
   const [apiConnected, setApiConnected] = useState(false);
+  const [catalogLabel, setCatalogLabel] = useState("");
   const [holdings, setHoldings] = useState(INITIAL_HOLDINGS);
   const [watch, setWatch] = useState(INITIAL_WATCH);
   const [sips, setSips] = useState(INITIAL_SIPS);
@@ -945,6 +1082,11 @@ export default function App(){
         setNavs(navsFromSchemes(data.schemes));
         setHoldings(data.portfolio.holdings.map(mapHolding));
         setSips(data.sips.map(mapSip));
+        setCatalogLabel(
+          data.catalogDataSource === "mfapi-snapshot"
+            ? `MFapi · ${data.catalogTotal ?? data.schemes.length} funds`
+            : `Live API · ${data.catalogTotal ?? data.schemes.length} funds`
+        );
         setApiConnected(true);
       } catch (err) {
         console.warn("BFF unavailable — using local demo data", err);
@@ -957,9 +1099,12 @@ export default function App(){
     if (!apiConnected) return;
     const id = setInterval(async ()=>{
       try {
-        const schemes = await fetchSchemes();
-        setFunds(schemes.map(mapScheme));
-        setNavs(navsFromSchemes(schemes));
+        const { items, dataSource, total } = await fetchSchemes();
+        setFunds(items.map(mapScheme));
+        setNavs(navsFromSchemes(items));
+        if (dataSource === "mfapi-snapshot") {
+          setCatalogLabel(`MFapi · ${total ?? items.length} funds`);
+        }
       } catch (_) { /* keep last good snapshot */ }
     }, 5000);
     return ()=>clearInterval(id);
@@ -1057,7 +1202,7 @@ export default function App(){
   const openFund = (f)=> setOpenFundObj(f);
 
   const curHolding = openFundObj ? holdings.find(h=>h.id===openFundObj.id) : null;
-  const titles = { home:"", explore:"Explore funds", portfolio:"Portfolio", sips:"My SIPs", profile:"Profile" };
+  const titles = { home:"", explore:"Explore funds", insights:"Fund Insights", portfolio:"Portfolio", sips:"My SIPs", profile:"Profile" };
 
   return (
     <div className="nv-root">
@@ -1080,7 +1225,7 @@ export default function App(){
                 {tab==="home"
                   ? <span className="wm">Niv<b>ya</b></span>
                   : <span className="wm" style={{fontSize:18}}>{titles[tab]}</span>}
-                {tab==="home" && <div className="arn-badge">AMFI-registered MF Distributor · {NIVYA_ARN}{apiConnected ? " · Live API" : ""}</div>}
+                {tab==="home" && <div className="arn-badge">AMFI-registered MF Distributor · {NIVYA_ARN}{apiConnected ? ` · ${catalogLabel || "Live API"}` : ""}</div>}
               </div>
             </div>
             <div className="appbar-actions">
@@ -1092,6 +1237,7 @@ export default function App(){
           {tab==="home" && <HomeScreen navs={navs} holdings={holdings} watch={watch} sips={sips}
             balVis={balVis} setBalVis={setBalVis} openFund={openFund} go={go} toggleWatch={toggleWatch} fundById={fundById} />}
           {tab==="explore" && <Explore funds={funds} navs={navs} watch={watch} openFund={openFund} toggleWatch={toggleWatch} />}
+          {tab==="insights" && <FundInsights openFund={openFund} setOrder={setOrder} go={go} />}
           {tab==="portfolio" && <Portfolio navs={navs} holdings={holdings} openFund={openFund} fundById={fundById} />}
           {tab==="sips" && <SipsScreen sips={sips} openFund={openFund} fundById={fundById} />}
           {tab==="profile" && <Profile holdings={holdings} navs={navs} toast={toast} />}

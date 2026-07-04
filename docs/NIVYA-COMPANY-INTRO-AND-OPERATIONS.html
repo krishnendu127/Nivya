@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NIVYA COMPANY INTRO AND OPERATIONS</title>
+<style>
+@page { margin: 18mm 16mm; size: A4; }
+body { font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.45;
+  color: #1a1a2e; max-width: 900px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 22pt; color: #16213e; border-bottom: 3px solid #19c9ae; padding-bottom: 8px; }
+h2 { font-size: 14pt; color: #2456be; margin-top: 28px; page-break-after: avoid; }
+h3 { font-size: 12pt; color: #16213e; margin-top: 20px; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0 18px; font-size: 10pt; }
+th, td { border: 1px solid #d0d7de; padding: 7px 10px; text-align: left; vertical-align: top; }
+th { background: #eaf7f3; font-weight: 700; }
+tr:nth-child(even) td { background: #f8fafc; }
+code, pre { background: #f4f6f8; border-radius: 6px; }
+pre { padding: 12px; overflow-x: auto; font-size: 9pt; white-space: pre-wrap; }
+blockquote { border-left: 4px solid #19c9ae; margin: 16px 0; padding: 8px 16px; background: #f0faf7; }
+a { color: #2456be; word-break: break-all; }
+hr { border: none; border-top: 1px solid #e2e8f0; margin: 24px 0; }
+.footer { margin-top: 32px; font-size: 9pt; color: #666; }
+@media print { body { padding: 0; } table { page-break-inside: avoid; } }
+</style>
+</head>
+<body>
+<h1 id="nivya-company-introduction-operations-outline">Nivya — Company Introduction &amp; Operations Outline</h1>
+<p><strong>Document type:</strong> Internal company brief (strategy, operations, positioning)<br />
+<strong>Audience:</strong> Strategy team, founders, compliance counsel, engineering<br />
+<strong>Version:</strong> 1.0<br />
+<strong>Date:</strong> 22 June 2026<br />
+<strong>Repository:</strong> https://github.com/Sahil2927/Nivya<br />
+<strong>Related docs:</strong> <code>NIVYA-TEAM-DISCUSSION-BRIEF.md</code>, <code>NIVYA-MF-PLATFORM-REPORT.md</code>, <code>HYBRID-E2E-PLAN.md</code>, <code>docs/ADR-001-hybrid-architecture.md</code></p>
+<blockquote>
+<p><strong>Disclaimer:</strong> This document describes intended business and product operations. It is <strong>not legal, tax, or investment advice</strong>. All regulatory statements must be validated by a CA and SEBI/AMFI-experienced compliance counsel before incorporation, ARN application, or public launch.</p>
+</blockquote>
+<hr />
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#1-company-introduction">Company introduction</a>  </li>
+<li><a href="#2-vision-mission-and-positioning">Vision, mission, and positioning</a>  </li>
+<li><a href="#3-confirmed-usp-v1">Confirmed USP (v1)</a>  </li>
+<li><a href="#4-business-model-and-revenue">Business model and revenue</a>  </li>
+<li><a href="#5-what-nivya-is--and-is-not">What Nivya is — and is not</a>  </li>
+<li><a href="#6-how-operations-work-end-to-end">How operations work (end-to-end)</a>  </li>
+<li><a href="#7-customer-journey">Customer journey</a>  </li>
+<li><a href="#8-internal-operating-functions">Internal operating functions</a>  </li>
+<li><a href="#9-product-scope-v1-launch">Product scope (v1 launch)</a>  </li>
+<li><a href="#10-technology-and-architecture-summary">Technology and architecture (summary)</a>  </li>
+<li><a href="#11-regulatory-and-compliance-operations">Regulatory and compliance operations</a>  </li>
+<li><a href="#12-competitive-landscape-context-for-strategy-team">Competitive landscape (context for strategy team)</a>  </li>
+<li><a href="#13-go-to-market-framework-to-be-completed-by-strategy-team">Go-to-market framework (to be completed by strategy team)</a>  </li>
+<li><a href="#14-strategy-team-workstreams-and-deliverables">Strategy team workstreams and deliverables</a>  </li>
+<li><a href="#15-roadmap-phases">Roadmap phases</a>  </li>
+<li><a href="#16-open-decisions-and-assumptions">Open decisions and assumptions</a>  </li>
+<li><a href="#17-glossary">Glossary</a></li>
+</ol>
+<hr />
+<h2 id="1-company-introduction">1. Company introduction</h2>
+<h3 id="11-name-and-intent">1.1 Name and intent</h3>
+<p><strong>Nivya</strong> is a planned <strong>Indian fintech company</strong> operating as a <strong>Corporate Mutual Fund Distributor (MFD)</strong> under <strong>AMFI</strong>. The product is a <strong>mobile-first and web</strong> platform for retail investors to <strong>discover, compare, and invest in Regular-plan mutual funds</strong> — with a simple, modern user experience comparable to consumer investing apps, while remaining fully compliant with distributor regulations.</p>
+<p>Nivya is <strong>mutual-funds-only</strong>. It does not offer stock broking, F&amp;O, or crypto.</p>
+<h3 id="12-problem-we-address">1.2 Problem we address</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Nivya response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct-plan apps (Groww, Coin, Kuvera) optimize for <strong>lowest TER</strong> — no distributor trail</td>
+<td>Nivya serves investors who use <strong>Regular plans</strong> via a <strong>transparent AMFI-registered distributor</strong></td>
+</tr>
+<tr>
+<td>Traditional distributors (agents, banks) often have <strong>weak digital UX</strong></td>
+<td>Nivya offers <strong>Groww-simple</strong> self-serve investing</td>
+</tr>
+<tr>
+<td>Research portals (e.g. Star SIP) are <strong>tool-heavy</strong>, invest flow secondary</td>
+<td>Nivya is <strong>invest-first</strong>: discover → compare → execute in one app</td>
+</tr>
+<tr>
+<td>Investors confused about <strong>Direct vs Regular</strong></td>
+<td>Nivya is <strong>clear</strong>: Regular plans only; transparent about distributor role and earnings</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-entity-status-as-of-document-date">1.3 Entity status (as of document date)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legal entity (Pvt Ltd / LLP)</td>
+<td><strong>To be incorporated</strong> (founder action)</td>
+</tr>
+<tr>
+<td>Corporate AMFI ARN</td>
+<td><strong>Not yet live</strong> — demo uses placeholder <code>ARN-XXXXXX</code></td>
+</tr>
+<tr>
+<td>EUIN (certified employee)</td>
+<td><strong>Required before ARN</strong> — NISM Series V-A</td>
+</tr>
+<tr>
+<td>Hybrid vendor (BSE/NSE rails)</td>
+<td><strong>To be selected</strong> via RFP</td>
+</tr>
+<tr>
+<td>Product</td>
+<td><strong>Working prototype</strong> + mock BFF in GitHub repo</td>
+</tr>
+<tr>
+<td>SEBI RIA (personalized advice)</td>
+<td><strong>Not planned for v1</strong> — Phase 2 option</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-vision-mission-and-positioning">2. Vision, mission, and positioning</h2>
+<h3 id="21-vision">2.1 Vision</h3>
+<p>Make <strong>Regular-plan mutual fund investing</strong> as <strong>simple and transparent</strong> as modern Direct-plan apps — without hiding how distribution works.</p>
+<h3 id="22-mission">2.2 Mission</h3>
+<p>Build an <strong>AMFI-registered, MF-only</strong> platform where investors <strong>discover and compare</strong> funds with clear data, <strong>review</strong> their portfolio with factual insights, <strong>choose</strong> their investments, and <strong>execute</strong> through Nivya as their corporate distributor.</p>
+<h3 id="23-positioning-statement-internal">2.3 Positioning statement (internal)</h3>
+<p><strong>For</strong> retail mutual fund investors in India <strong>who</strong> want a simple digital app (not a bank RM or agent) <strong>and</strong> are investing through <strong>Regular plans</strong>, <strong>Nivya</strong> is an <strong>MF-only distribution app</strong> <strong>that</strong> helps you discover, compare, and invest with portfolio clarity <strong>unlike</strong> Direct-only fintechs (no trail / different model) <strong>and</strong> unlike research-heavy portals (invest is secondary), <strong>because</strong> Nivya combines <strong>Groww-level UX</strong> with <strong>honest AMFI distributor transparency</strong>.</p>
+<h3 id="24-brand-pillars">2.4 Brand pillars</h3>
+<table>
+<thead>
+<tr>
+<th>Pillar</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MF-only</strong></td>
+<td>No stocks, F&amp;O, or product clutter</td>
+</tr>
+<tr>
+<td><strong>Clarity</strong></td>
+<td>Clear data, clear Regular-plan model, clear ARN/EUIN</td>
+</tr>
+<tr>
+<td><strong>You choose</strong></td>
+<td>Discovery and comparison — not personalized advice in v1</td>
+</tr>
+<tr>
+<td><strong>We execute</strong></td>
+<td>Compliant order flow, SID consent, mandates, support</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-confirmed-usp-v1">3. Confirmed USP (v1)</h2>
+<h3 id="31-primary-usp-approved-direction">3.1 Primary USP (approved direction)</h3>
+<blockquote>
+<p><strong>Nivya helps you discover and compare Regular mutual funds with clear data and portfolio insights — you choose, we execute as your AMFI-registered distributor.</strong></p>
+</blockquote>
+<h3 id="32-supporting-proof-points-product-compliance">3.2 Supporting proof points (product + compliance)</h3>
+<table>
+<thead>
+<tr>
+<th>Proof point</th>
+<th>How it shows up in product</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Discover &amp; compare</strong></td>
+<td>Category screener, filters, past returns, expense ratio, riskometer — <strong>factual</strong>, not “we recommend”</td>
+</tr>
+<tr>
+<td><strong>Portfolio insights</strong></td>
+<td>Holdings, XIRR, allocation, concentration facts — <strong>no buy/sell advice</strong> in v1</td>
+</tr>
+<tr>
+<td><strong>You choose</strong></td>
+<td>User selects fund; no personalized advisory engine until SEBI RIA (Phase 2)</td>
+</tr>
+<tr>
+<td><strong>We execute</strong></td>
+<td>SIP, lumpsum, redeem, switch; orders tagged with <strong>ARN + EUIN</strong></td>
+</tr>
+<tr>
+<td><strong>Transparent distributor</strong></td>
+<td>AMFI tagline on all surfaces; “How Nivya earns” content; Regular plan badge on funds</td>
+</tr>
+<tr>
+<td><strong>MF-only</strong></td>
+<td>Single-product app — no cross-sell to unrelated products at launch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-what-we-do-not-claim-v1">3.3 What we do <strong>not</strong> claim (v1)</h3>
+<ul>
+<li>“Best fund for you” / personalized recommendations  </li>
+<li>“Predicted returns” or “chance of growth”  </li>
+<li>“Zero commission” (Direct-plan pitch)  </li>
+<li>“Guaranteed” or indicative performance  </li>
+<li>Stock broking or trading features  </li>
+</ul>
+<h3 id="34-future-usp-extension-phase-2-requires-sebi-ria">3.4 Future USP extension (Phase 2 — requires SEBI RIA)</h3>
+<p>Personalized fund recommendations and portfolio review with <strong>actionable suggestions</strong> — only after <strong>SEBI Investment Adviser</strong> registration and counsel-approved advice/execution separation.</p>
+<hr />
+<h2 id="4-business-model-and-revenue">4. Business model and revenue</h2>
+<h3 id="41-model-type">4.1 Model type</h3>
+<p><strong>Corporate Mutual Fund Distributor (AMFI ARN)</strong> — <strong>Hybrid Path B</strong>:</p>
+<ul>
+<li><strong>Nivya builds:</strong> brand, UX, BFF, user data, order orchestration, compliance audit trail  </li>
+<li><strong>Vendor provides (initially):</strong> BSE StAR MF / NSE MF Invest connectivity, KYC modules, mandates, scheme master  </li>
+</ul>
+<p>See <code>docs/ADR-001-hybrid-architecture.md</code>.</p>
+<h3 id="42-plan-type">4.2 Plan type</h3>
+<p><strong>Regular plans only</strong> — intentional, for revenue and regulatory clarity.</p>
+<table>
+<thead>
+<tr>
+<th>Plan</th>
+<th>Nivya offers?</th>
+<th>Nivya revenue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Regular</strong></td>
+<td><strong>Yes</strong></td>
+<td><strong>Trail commission</strong> from AMCs on AUM</td>
+</tr>
+<tr>
+<td><strong>Direct</strong></td>
+<td><strong>No</strong></td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-revenue-streams">4.3 Revenue streams</h3>
+<table>
+<thead>
+<tr>
+<th>Stream</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Primary</strong></td>
+<td>Trail commission from AMCs on Regular-plan AUM (ongoing %)</td>
+</tr>
+<tr>
+<td><strong>Secondary (future)</strong></td>
+<td>Advisory fees if SEBI RIA is added (separate from v1)</td>
+</tr>
+<tr>
+<td><strong>Not in v1</strong></td>
+<td>Upfront commission, guaranteed-return products, stock broking</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-unit-economics-metrics-to-track">4.4 Unit economics (metrics to track)</h3>
+<ul>
+<li>Regular-plan <strong>AUM</strong> under Nivya ARN  </li>
+<li><strong>SIP book</strong> size and retention  </li>
+<li><strong>SIP bounce</strong> rate (mandate failures)  </li>
+<li><strong>KYC conversion</strong> (signup → KYC complete → first order)  </li>
+<li><strong>Cost per funded account</strong> (marketing + ops)  </li>
+<li><strong>Trail reconciliation</strong> vs AMC statements (monthly)</li>
+</ul>
+<hr />
+<h2 id="5-what-nivya-is-and-is-not">5. What Nivya is — and is not</h2>
+<table>
+<thead>
+<tr>
+<th>Nivya <strong>IS</strong></th>
+<th>Nivya <strong>IS NOT</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AMFI-registered <strong>corporate</strong> MF distributor (target)</td>
+<td>SEBI <strong>stock broker</strong></td>
+</tr>
+<tr>
+<td><strong>Regular-plan</strong> transaction platform</td>
+<td><strong>Direct-plan</strong> / zero-commission EOP (Groww/Coin/Kuvera model)</td>
+</tr>
+<tr>
+<td><strong>Self-serve</strong> app — customer invests without a human agent</td>
+<td>Agent network / sub-broker platform (optional later)</td>
+</tr>
+<tr>
+<td><strong>Distribution</strong> — factual discovery, comparison, execution</td>
+<td><strong>Personalized investment advice</strong> without SEBI RIA (v1)</td>
+</tr>
+<tr>
+<td>Trail-commission business from AMCs</td>
+<td>Guaranteed or indicative return marketing</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-how-operations-work-end-to-end">6. How operations work (end-to-end)</h2>
+<h3 id="61-operational-flow-diagram">6.1 Operational flow diagram</h3>
+<pre><code>┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   INVESTOR   │────▶│  NIVYA APP   │────▶│  NIVYA BFF   │────▶│ VENDOR ADAPTER│
+│  (Android/   │     │  Web + Mobile│     │  (Node API)  │     │ (Hybrid rail) │
+│   iOS/Web)   │     └──────────────┘     └──────┬───────┘     └──────┬───────┘
+└──────────────┘                                 │                    │
+                                                 │                    ▼
+                                                 │            BSE StAR MF / NSE MF Invest
+                                                 │                    │
+                                                 │                    ▼
+                                                 │              RTA (CAMS/KFin)
+                                                 │                    │
+                                                 │                    ▼
+                                                 │                    AMC
+                                                 ▼
+                                          PostgreSQL ledger
+                                          (users, orders, consents, audit)
+</code></pre>
+<h3 id="62-order-lifecycle-production-target">6.2 Order lifecycle (production target)</h3>
+<pre><code>DRAFT → PAYMENT_PENDING / MANDATE_PENDING → SUBMITTED_TO_EXCHANGE
+  → ACCEPTED / REJECTED → UNITS_ALLOTED → COMPLETED (or FAILED)
+</code></pre>
+<p>Every transition logged in <strong>immutable audit trail</strong>.</p>
+<h3 id="63-money-flow-investor-perspective">6.3 Money flow (investor perspective)</h3>
+<ol>
+<li>Investor pays via <strong>payment gateway</strong> (lumpsum) or <strong>eNACH/OTM mandate</strong> (SIP).  </li>
+<li>Funds flow through <strong>prescribed MF transaction rails</strong> — not held by Nivya as discretionary pool.  </li>
+<li>Units credited to investor <strong>folio</strong> at RTA/AMC.  </li>
+<li>Redemption proceeds go to <strong>verified bank account</strong>.</li>
+</ol>
+<h3 id="64-commission-flow-nivya-perspective">6.4 Commission flow (Nivya perspective)</h3>
+<ol>
+<li>Investor holds <strong>Regular-plan</strong> units tagged with <strong>Nivya ARN + EUIN</strong>.  </li>
+<li>AMC pays <strong>trail commission</strong> to Nivya per empanelment terms.  </li>
+<li>Finance reconciles <strong>monthly</strong> with AMC / vendor reports.</li>
+</ol>
+<hr />
+<h2 id="7-customer-journey">7. Customer journey</h2>
+<h3 id="71-acquisition-retention">7.1 Acquisition → retention</h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Customer action</th>
+<th>Nivya operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Awareness</strong></td>
+<td>Sees ad, content, referral</td>
+<td>Marketing (GTM team) — no guaranteed-return claims</td>
+</tr>
+<tr>
+<td><strong>Signup</strong></td>
+<td>Phone OTP</td>
+<td>Auth service; DPDP consent</td>
+</tr>
+<tr>
+<td><strong>KYC</strong></td>
+<td>PAN, KRA status</td>
+<td>KYC orchestration via vendor/KRA</td>
+</tr>
+<tr>
+<td><strong>Discovery</strong></td>
+<td>Browse category, screener, compare</td>
+<td>Scheme catalog API; <strong>factual</strong> data only</td>
+</tr>
+<tr>
+<td><strong>Consent</strong></td>
+<td>Accept SID/KIM for scheme</td>
+<td>Consent logged before first investment</td>
+</tr>
+<tr>
+<td><strong>Invest</strong></td>
+<td>SIP / lumpsum</td>
+<td>Order + mandate + payment; ARN/EUIN on payload</td>
+</tr>
+<tr>
+<td><strong>Hold</strong></td>
+<td>View portfolio, SIP book</td>
+<td>Portfolio sync from RTA/exchange</td>
+</tr>
+<tr>
+<td><strong>Review</strong></td>
+<td>Portfolio insights dashboard</td>
+<td>XIRR, allocation, concentration facts</td>
+</tr>
+<tr>
+<td><strong>Transact</strong></td>
+<td>Redeem / switch / pause SIP</td>
+<td>Order API + support if needed</td>
+</tr>
+<tr>
+<td><strong>Support</strong></td>
+<td>Grievance, failed mandate</td>
+<td>Customer support + SEBI SCORES path</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-what-the-customer-does-not-need">7.2 What the customer does <strong>not</strong> need</h3>
+<ul>
+<li>A separate <strong>broker</strong> or <strong>agent</strong> to place each order  </li>
+<li>A <strong>Demat account</strong> (SOA/folio model — standard for MF)  </li>
+<li>To choose <strong>Direct vs Regular</strong> on Nivya — <strong>Regular only</strong></li>
+</ul>
+<hr />
+<h2 id="8-internal-operating-functions">8. Internal operating functions</h2>
+<h3 id="81-function-map">8.1 Function map</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Responsibility</th>
+<th>Owner (target)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Founder / CEO</strong></td>
+<td>Strategy, fundraising, vendor/AMC relationships</td>
+<td>Founder</td>
+</tr>
+<tr>
+<td><strong>Compliance</strong></td>
+<td>ARN, KYD, policies, copy review, AMFI DSC, grievance</td>
+<td>Compliance Officer + counsel</td>
+</tr>
+<tr>
+<td><strong>Operations</strong></td>
+<td>Order exceptions, mandate failures, reconciliation</td>
+<td>Ops + vendor</td>
+</tr>
+<tr>
+<td><strong>Customer support</strong></td>
+<td>Phone, email, in-app help</td>
+<td>Support team (pre-launch hire)</td>
+</tr>
+<tr>
+<td><strong>Engineering</strong></td>
+<td>App, BFF, integrations, security</td>
+<td>Engineering team</td>
+</tr>
+<tr>
+<td><strong>Product / Design</strong></td>
+<td>UX, screener, portfolio insights, roadmap</td>
+<td>Product</td>
+</tr>
+<tr>
+<td><strong>Finance</strong></td>
+<td>Commission reconciliation, vendor payments</td>
+<td>Finance / CA</td>
+</tr>
+<tr>
+<td><strong>Marketing / GTM</strong></td>
+<td>Acquisition, content, brand</td>
+<td><strong>Strategy team (current hire)</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-daily-weekly-monthly-operations-post-launch">8.2 Daily / weekly / monthly operations (post-launch)</h3>
+<table>
+<thead>
+<tr>
+<th>Cadence</th>
+<th>Activity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Daily</strong></td>
+<td>Monitor order success rate, KYC failures, mandate bounces, support tickets</td>
+</tr>
+<tr>
+<td><strong>Weekly</strong></td>
+<td>Scheme master / NAV sync health; vendor SLA review</td>
+</tr>
+<tr>
+<td><strong>Monthly</strong></td>
+<td>AMC commission reconciliation; compliance copy audit; grievance report</td>
+</tr>
+<tr>
+<td><strong>Annual</strong></td>
+<td>AMFI Declaration of Self-Certification (DSC)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-hybrid-vendor-operations">8.3 Hybrid vendor operations</h3>
+<p>Nivya remains <strong>accountable to the investor</strong> for UX and compliance presentation; vendor handles exchange API maintenance. <strong>VendorMFAdapter</strong> in codebase allows vendor swap with owned PostgreSQL ledger retained.</p>
+<hr />
+<h2 id="9-product-scope-v1-launch">9. Product scope (v1 launch)</h2>
+<h3 id="91-in-scope-mvp">9.1 In scope (MVP)</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Auth</strong></td>
+<td>OTP login, session, profile</td>
+</tr>
+<tr>
+<td><strong>KYC</strong></td>
+<td>PAN, KRA status gate before first order</td>
+</tr>
+<tr>
+<td><strong>Discover</strong></td>
+<td>Fund list, search, categories, <strong>screener</strong> (category, horizon, amount, SIP/lumpsum)</td>
+</tr>
+<tr>
+<td><strong>Compare</strong></td>
+<td>Scheme facts, past returns, expense, riskometer</td>
+</tr>
+<tr>
+<td><strong>Invest</strong></td>
+<td>Lumpsum, SIP, redeem, switch (as vendor supports)</td>
+</tr>
+<tr>
+<td><strong>Portfolio</strong></td>
+<td>Holdings, value, XIRR, allocation</td>
+</tr>
+<tr>
+<td><strong>SIPs</strong></td>
+<td>SIP book, status, mandate link</td>
+</tr>
+<tr>
+<td><strong>Insights</strong></td>
+<td>Portfolio health <strong>facts</strong> (concentration, category mix) — not advice</td>
+</tr>
+<tr>
+<td><strong>Compliance</strong></td>
+<td>ARN strip, disclaimers, SID consent, EUIN on confirmation</td>
+</tr>
+<tr>
+<td><strong>Profile</strong></td>
+<td>Bank, mandates, statements (as phased), grievance contact</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-out-of-scope-v1">9.2 Out of scope (v1)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stocks, F&amp;O, crypto</td>
+<td>Wrong license</td>
+</tr>
+<tr>
+<td>Direct plans</td>
+<td>No trail revenue; different model</td>
+</tr>
+<tr>
+<td>Personalized recommendations</td>
+<td>Requires SEBI RIA</td>
+</tr>
+<tr>
+<td>“Predictive” return engine</td>
+<td>Regulatory risk</td>
+</tr>
+<tr>
+<td>Insurance, loans, shop</td>
+<td>Off-brand; Star SIP mixes these — Nivya stays MF-only</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-channels">9.3 Channels</h3>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Android app</strong></td>
+<td>P0 (React Native)</td>
+</tr>
+<tr>
+<td><strong>iOS app</strong></td>
+<td>P0 (React Native)</td>
+</tr>
+<tr>
+<td><strong>Web</strong></td>
+<td>P0 (Next.js target; Vite prototype today)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-technology-and-architecture-summary">10. Technology and architecture (summary)</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Technology (decided / planned)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mobile</td>
+<td><strong>React Native</strong> + TypeScript</td>
+</tr>
+<tr>
+<td>Web</td>
+<td>React → <strong>Next.js</strong></td>
+</tr>
+<tr>
+<td>BFF</td>
+<td><strong>Node.js (Fastify)</strong> → optional NestJS at scale</td>
+</tr>
+<tr>
+<td>Database</td>
+<td><strong>PostgreSQL</strong> + Redis</td>
+</tr>
+<tr>
+<td>Vendor</td>
+<td><code>VendorMFAdapter</code> — mock today, production vendor TBD</td>
+</tr>
+<tr>
+<td>Monorepo</td>
+<td>npm workspaces → Turborepo target</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Repo today:</strong> prototype <code>nivya-app.jsx</code>, <code>services/api</code>, <code>packages/compliance</code>, <code>docs/openapi.yaml</code>, <code>infra/schema.sql</code>.</p>
+<hr />
+<h2 id="11-regulatory-and-compliance-operations">11. Regulatory and compliance operations</h2>
+<h3 id="111-pre-launch-checklist-business">11.1 Pre-launch checklist (business)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Incorporate company (Pvt Ltd / LLP)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>NISM Series V-A → <strong>EUIN</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Corporate ARN</strong> + <strong>KYD</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Empanelment with AMCs</td>
+</tr>
+<tr>
+<td>5</td>
+<td>BSE StAR MF / NSE MF Invest (via vendor or direct)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Hybrid vendor contract + UAT credentials</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Grievance process + SEBI SCORES</td>
+</tr>
+<tr>
+<td>8</td>
+<td>DPDP privacy policy</td>
+</tr>
+<tr>
+<td>9</td>
+<td>MF compliance counsel retainer</td>
+</tr>
+</tbody>
+</table>
+<h3 id="112-always-on-compliance-product-marketing">11.2 Always-on compliance (product + marketing)</h3>
+<ul>
+<li>Display <strong>“AMFI-registered Mutual Fund Distributor”</strong> + <strong>live ARN</strong> (font ≥ 12px)  </li>
+<li><strong>EUIN</strong> on every order  </li>
+<li><strong>SID/KIM consent</strong> before first investment per scheme  </li>
+<li>Standard MF risk disclaimer  </li>
+<li><strong>No</strong> guaranteed / indicative returns  </li>
+<li><strong>No</strong> personalized advice copy in v1  </li>
+<li><strong>Regular plans only</strong> — clear vs Direct competitors  </li>
+</ul>
+<h3 id="113-content-review-process-recommended">11.3 Content review process (recommended)</h3>
+<p>All customer-facing copy (app, web, ads, push) → <strong>Compliance Officer or counsel sign-off</strong> before publish.</p>
+<hr />
+<h2 id="12-competitive-landscape-context-for-strategy-team">12. Competitive landscape (context for strategy team)</h2>
+<p>Strategy team should expand this section. Summary for alignment:</p>
+<table>
+<thead>
+<tr>
+<th>Competitor type</th>
+<th>Examples</th>
+<th>Model vs Nivya</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Direct / EOP apps</strong></td>
+<td>Groww, Coin, Kuvera, ET Money</td>
+<td><strong>Opposite</strong> — Direct, zero MF trail</td>
+</tr>
+<tr>
+<td><strong>Regular research portals</strong></td>
+<td><a href="https://starsip.in/">Star SIP</a></td>
+<td><strong>Closer peer</strong> — Regular MFD, research-first</td>
+</tr>
+<tr>
+<td><strong>National distributors</strong></td>
+<td>NJ Wealth, Prudent</td>
+<td>Same Regular trail; <strong>B2B agent</strong> vs Nivya <strong>B2C app</strong></td>
+</tr>
+<tr>
+<td><strong>Banks</strong></td>
+<td>HDFC, ICICI, SBI apps</td>
+<td>Regular; <strong>weak UX</strong> — Nivya opportunity</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nivya wedge:</strong> Regular MFD + <strong>invest-first app</strong> + <strong>transparent distributor</strong> + <strong>MF-only</strong>.</p>
+<hr />
+<h2 id="13-go-to-market-framework-to-be-completed-by-strategy-team">13. Go-to-market framework (to be completed by strategy team)</h2>
+<p><em>Founders confirm USP; strategy team fills the tables below.</em></p>
+<h3 id="131-target-customer-segments-draft-validate">13.1 Target customer segments (draft — validate)</h3>
+<table>
+<thead>
+<tr>
+<th>Segment</th>
+<th>Hypothesis</th>
+<th>Message angle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>First-time MF investors</strong></td>
+<td>Want simple app, not agent</td>
+<td>“Start SIP in minutes — MF-only app”</td>
+</tr>
+<tr>
+<td><strong>Existing Regular investors</strong></td>
+<td>Frustrated with bank/RM UX</td>
+<td>“See portfolio clearly — invest in one app”</td>
+</tr>
+<tr>
+<td><strong>SIP-focused savers</strong></td>
+<td>Monthly habit</td>
+<td>“SIP-first, transparent Regular distributor”</td>
+</tr>
+<tr>
+<td><strong>Tier-2/3 digital users</strong></td>
+<td>Underserved by English-first Direct apps</td>
+<td>Hindi/regional, simple copy (test in research)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="132-gtm-deliverables-strategy-team-output">13.2 GTM deliverables (strategy team output)</h3>
+<table>
+<thead>
+<tr>
+<th>Deliverable</th>
+<th>Description</th>
+<th>Due</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GTM-001</strong></td>
+<td>ICP + persona documents (2–3 personas)</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td><strong>GTM-002</strong></td>
+<td>Competitor matrix (10+ players, Regular vs Direct, features, messaging)</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td><strong>GTM-003</strong></td>
+<td>Channel plan (organic, paid, referral, partnerships) + budget range</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td><strong>GTM-004</strong></td>
+<td>Launch phasing (soft beta → public) + KPIs</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td><strong>GTM-005</strong></td>
+<td>Messaging house (hero, proof points, disclaimers)</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td><strong>GTM-006</strong></td>
+<td>Pricing / CAC assumptions vs trail breakeven model</td>
+<td>TBD</td>
+</tr>
+</tbody>
+</table>
+<h3 id="133-kpis-launch">13.3 KPIs (launch)</h3>
+<table>
+<thead>
+<tr>
+<th>KPI</th>
+<th>Target (soft launch — to be set by team)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Order success rate</td>
+<td>≥ 98%</td>
+</tr>
+<tr>
+<td>KYC completion (signup → registered)</td>
+<td>≥ 70%</td>
+</tr>
+<tr>
+<td>First SIP within 7 days of KYC</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td>SIP bounce rate</td>
+<td>TBD</td>
+</tr>
+<tr>
+<td>CAC vs projected trail LTV</td>
+<td>TBD</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-strategy-team-workstreams-and-deliverables">14. Strategy team workstreams and deliverables</h2>
+<p><strong>Team size:</strong> 3 people (competitor analysis, GTM, USP/messaging).</p>
+<h3 id="141-workstream-a-competitor-analysis">14.1 Workstream A — Competitor analysis</h3>
+<p><strong>Objective:</strong> Map who competes for the same user and how Nivya differs on <strong>Regular MFD + invest-first UX</strong>.</p>
+<p><strong>Tasks:</strong></p>
+<ol>
+<li>Build competitor database (Direct apps, Regular portals, NDs, banks).  </li>
+<li>Compare: plan type, license, UX, discovery, execution, content, app ratings, messaging.  </li>
+<li>Deep dives: <strong>Star SIP</strong>, <strong>Kuvera</strong>, <strong>Groww</strong>, <strong>one bank app</strong>, <strong>NJ/Prudent retail touchpoint</strong>.  </li>
+<li>SWOT for Nivya vs top 5.  </li>
+<li><strong>Output:</strong> <code>COMPETITOR-ANALYSIS.md</code> + presentation deck.</li>
+</ol>
+<h3 id="142-workstream-b-gtm-strategy">14.2 Workstream B — GTM strategy</h3>
+<p><strong>Objective:</strong> Define how Nivya acquires first 1k / 10k funded users post-ARN.</p>
+<p><strong>Tasks:</strong></p>
+<ol>
+<li>Finalize ICP and geographic focus.  </li>
+<li>Channel strategy (content/SEO, paid, influencers — <strong>compliance-safe</strong>).  </li>
+<li>Launch timeline aligned with ARN + vendor UAT.  </li>
+<li>Partnerships (AMC co-marketing, employers — if applicable).  </li>
+<li>Support and grievance readiness plan.  </li>
+<li><strong>Output:</strong> <code>GTM-STRATEGY.md</code> + 90-day calendar.</li>
+</ol>
+<h3 id="143-workstream-c-usp-and-messaging">14.3 Workstream C — USP and messaging</h3>
+<p><strong>Objective:</strong> Turn confirmed USP into <strong>customer-facing messaging</strong> and <strong>in-app copy framework</strong>.</p>
+<p><strong>Tasks:</strong></p>
+<ol>
+<li>Lock hero tagline variants (A/B list) — compliance review list.  </li>
+<li>“How Nivya earns” / Direct vs Regular explainer (transparent distributor story).  </li>
+<li>Feature naming: <strong>Fund screener</strong>, <strong>Portfolio insights</strong> (avoid “recommendation”).  </li>
+<li>Disclaimer library (app footer, order sheet, marketing).  </li>
+<li><strong>Output:</strong> <code>BRAND-MESSAGING-GUIDE.md</code> + copy doc for app screens.</li>
+</ol>
+<h3 id="144-cross-team-sync">14.4 Cross-team sync</h3>
+<table>
+<thead>
+<tr>
+<th>Meeting</th>
+<th>Frequency</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Strategy standup</td>
+<td>Weekly</td>
+<td>Progress on A/B/C deliverables</td>
+</tr>
+<tr>
+<td>Founder review</td>
+<td>Bi-weekly</td>
+<td>Decisions on ICP, GTM spend, messaging</td>
+</tr>
+<tr>
+<td>Compliance review</td>
+<td>Before any public copy goes live</td>
+<td>Counsel sign-off</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-roadmap-phases">15. Roadmap phases</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Timeline</th>
+<th>Business</th>
+<th>Product</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 — Foundation</strong></td>
+<td>Weeks 1–8</td>
+<td>Incorporate, NISM/EUIN, ARN apply, vendor RFP</td>
+<td>Prototype ✅, BFF mock ✅</td>
+</tr>
+<tr>
+<td><strong>1 — Market access</strong></td>
+<td>Weeks 6–14</td>
+<td>ARN live, AMC empanelment, UAT credentials</td>
+<td>Vendor adapter UAT</td>
+</tr>
+<tr>
+<td><strong>2 — MVP</strong></td>
+<td>Weeks 10–22</td>
+<td>Compliance live, support hired</td>
+<td>Auth, KYC, screener, orders, portfolio</td>
+</tr>
+<tr>
+<td><strong>3 — Mobile + harden</strong></td>
+<td>Weeks 18–28</td>
+<td>Security audit</td>
+<td>RN iOS/Android store beta</td>
+</tr>
+<tr>
+<td><strong>4 — Soft launch</strong></td>
+<td>Weeks 26–30</td>
+<td>50–200 user beta</td>
+<td>Real orders, KPI monitoring</td>
+</tr>
+<tr>
+<td><strong>5 — Public launch</strong></td>
+<td>Week 30+</td>
+<td>Marketing scale</td>
+<td>App stores + web public</td>
+</tr>
+<tr>
+<td><strong>6 — RIA (optional)</strong></td>
+<td>Post-launch</td>
+<td>SEBI RIA if approved</td>
+<td>Personalized recommendations</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="16-open-decisions-and-assumptions">16. Open decisions and assumptions</h2>
+<h3 id="161-decisions-required">16.1 Decisions required</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Decision</th>
+<th>Options</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Legal entity</td>
+<td>Pvt Ltd / LLP</td>
+<td>Founder + CA</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Hybrid vendor</td>
+<td>RFP shortlist</td>
+<td>Founder + engineering</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Primary exchange rail</td>
+<td>BSE first / NSE first</td>
+<td>Compliance + vendor</td>
+</tr>
+<tr>
+<td>4</td>
+<td>First launch geography</td>
+<td>Pan-India / focus states</td>
+<td>Strategy team</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Hindi/regional v1</td>
+<td>Yes / Phase 2</td>
+<td>Product + GTM</td>
+</tr>
+<tr>
+<td>6</td>
+<td>SEBI RIA timeline</td>
+<td>Year 1 / Year 2 / No</td>
+<td>Founder + counsel</td>
+</tr>
+</tbody>
+</table>
+<h3 id="162-assumptions-documented">16.2 Assumptions (documented)</h3>
+<ul>
+<li>Nivya remains <strong>Regular-only</strong> for v1 revenue model.  </li>
+<li><strong>No personalized advice</strong> in v1 without RIA.  </li>
+<li><strong>Hybrid vendor</strong> signed by Phase 1.  </li>
+<li><strong>React Native</strong> for mobile per ADR-001.  </li>
+<li>Trail commission is <strong>primary revenue</strong> for first 24 months.</li>
+</ul>
+<hr />
+<h2 id="17-glossary">17. Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AMFI</strong></td>
+<td>Association of Mutual Funds in India</td>
+</tr>
+<tr>
+<td><strong>ARN</strong></td>
+<td>AMFI Registration Number (entity distributor ID)</td>
+</tr>
+<tr>
+<td><strong>EUIN</strong></td>
+<td>Employee Unique Identification Number (on each transaction)</td>
+</tr>
+<tr>
+<td><strong>MFD</strong></td>
+<td>Mutual Fund Distributor</td>
+</tr>
+<tr>
+<td><strong>Regular plan</strong></td>
+<td>MF plan with distributor commission embedded in TER</td>
+</tr>
+<tr>
+<td><strong>Direct plan</strong></td>
+<td>MF plan without distributor commission — lower TER</td>
+</tr>
+<tr>
+<td><strong>Trail commission</strong></td>
+<td>Ongoing AMC payment to distributor on Regular AUM</td>
+</tr>
+<tr>
+<td><strong>BSE StAR MF</strong></td>
+<td>BSE mutual fund transaction platform</td>
+</tr>
+<tr>
+<td><strong>NSE MF Invest</strong></td>
+<td>NSE mutual fund transaction platform</td>
+</tr>
+<tr>
+<td><strong>RTA</strong></td>
+<td>Registrar and Transfer Agent (CAMS, KFinTech)</td>
+</tr>
+<tr>
+<td><strong>KRA</strong></td>
+<td>KYC Registration Agency</td>
+</tr>
+<tr>
+<td><strong>SID / KIM</strong></td>
+<td>Scheme Information Document / Key Information Memorandum</td>
+</tr>
+<tr>
+<td><strong>SIP</strong></td>
+<td>Systematic Investment Plan</td>
+</tr>
+<tr>
+<td><strong>BFF</strong></td>
+<td>Backend-for-frontend API layer</td>
+</tr>
+<tr>
+<td><strong>RIA</strong></td>
+<td>SEBI Registered Investment Adviser</td>
+</tr>
+<tr>
+<td><strong>EOP</strong></td>
+<td>SEBI Execution-Only Platform (Direct plans)</td>
+</tr>
+<tr>
+<td><strong>AUM</strong></td>
+<td>Assets Under Management</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="document-control">Document control</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Author</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>22 Jun 2026</td>
+<td>Nivya / founder brief</td>
+<td>Initial company intro &amp; operations outline; USP v1 locked</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next updates:</strong> Strategy team to attach deliverables (§14) and fill GTM tables (§13).</p>
+<hr />
+<p><em>End of document.</em></p>
+<p class="footer">Generated from docs/NIVYA-COMPANY-INTRO-AND-OPERATIONS.md — Nivya internal use. Print (Ctrl+P) → Save as PDF.</p>
+</body>
+</html>

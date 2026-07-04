@@ -27,23 +27,22 @@ export function createMockVendorMFAdapter() {
 
     async submitOrder(req) {
       const scheme = schemeByCode(req.schemeCode);
-      if (!scheme) {
-        return { vendorRef: "", status: "rejected", message: "Unknown scheme" };
-      }
-      if (req.type === "switch" && !req.targetSchemeCode) {
+      if (!scheme && req.type === "switch" && !req.targetSchemeCode) {
         return { vendorRef: "", status: "rejected", message: "targetSchemeCode required for switch" };
       }
       return {
         vendorRef: `MOCK-${randomUUID().slice(0, 8).toUpperCase()}`,
         status: "accepted",
-        message: "Demo order accepted by mock adapter",
+        message: scheme
+          ? "Demo order accepted by mock adapter"
+          : "Demo order accepted (catalog scheme)",
       };
     },
 
     async registerSip({ schemeCode, amount, debitDay }) {
       const scheme = schemeByCode(schemeCode);
-      if (!scheme) throw new Error("Unknown scheme");
-      if (amount < scheme.minSip) throw new Error(`Minimum SIP is ${scheme.minSip}`);
+      const minSip = scheme?.minSip ?? 500;
+      if (amount < minSip) throw new Error(`Minimum SIP is ${minSip}`);
       if (debitDay < 1 || debitDay > 28) throw new Error("debitDay must be 1–28");
       return {
         vendorRef: `MOCK-SIP-${randomUUID().slice(0, 8).toUpperCase()}`,

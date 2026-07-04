@@ -1,0 +1,12 @@
+{
+  "name": "@nivya/screener-worker",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build-snapshot": "node build-snapshot.js",
+    "start": "node build-snapshot.js"
+  },
+  "dependencies": {
+    "@nivya/vendor-mf": "*"
+  }
+}

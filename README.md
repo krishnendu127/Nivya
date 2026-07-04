@@ -29,6 +29,34 @@ The current codebase (`nivya-app.jsx`) is a **high-quality UI prototype** with m
 
 ---
 
+## Developer quick start (prototype)
+
+When the BFF is running, the UI shows catalog source in the home header and loads schemes, portfolio, and SIPs from `/v1`.
+
+**Fund Insights screener** (build snapshot, then use Insights tab):
+
+```bash
+npm run screener:build   # MFapi.in → data/screener_snapshot.json (falls back to mock)
+npm run test:screener    # ranking unit tests
+npm run dev:stack        # API + Vite together
+```
+
+| Path | Description |
+|------|-------------|
+| `nivya-app.jsx` | Single-file React prototype (MF-only demo) |
+| `src/main.jsx` | Vite entry point |
+| `src/nivya-api.js` | BFF client (demo session, orders, NAV poll, screener) |
+| `src/FundInsights.jsx` | Fund Insights screener UI (Regular plans, ranked by data) |
+| `src/FundChatbot.jsx` | Fund Q&A chat (factual, rule-based) |
+| `services/api/` | BFF — Fastify mock API (`docs/openapi.yaml`) |
+| `services/screener-worker/` | NAV ingest + `data/screener_snapshot.json` builder |
+| `packages/screener-core/` | Rule-based ranking engine + fund chat |
+| `services/vendor-mf/` | `VendorMFAdapter` + mock exchange adapter |
+| `packages/compliance/` | ARN tagline, order compliance helpers |
+| `infra/schema.sql` | PostgreSQL schema (v0.1) |
+
+---
+
 ## Table of Contents
 
 1. [Scope & Business Model](#1-scope--business-model)  
@@ -177,7 +205,7 @@ The file self-describes as:
 
 Corporate MFD registration is governed by:
 
-- **SEBI Master Circular for Mutual Funds** (Jun 27, 2024) — Chapter 15 on intermediaries  
+- **SEBI Master Circular for Mutual Funds** (Jun 27, 2024) — Chapter 15 on intermediaries
 - **AMFI Master Circular for Mutual Fund Distributors** (Jan 14, 2026)  
 - **AMFI online registration** via CAMS portal  
 

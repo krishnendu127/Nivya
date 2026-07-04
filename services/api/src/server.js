@@ -9,6 +9,9 @@ import {
   schemeByCode,
   tickNavs,
 } from "@nivya/vendor-mf";
+import screenerRoutes from "./routes/screener.js";
+import { getCatalogScheme, getSnapshotMeta, listCatalogSchemes } from "./lib/snapshot-store.js";
+import { buildPortfolioInsights } from "./lib/portfolio-insights.js";
 
 const PORT = Number(process.env.PORT || 3001);
 const DEMO_OTP = process.env.DEMO_OTP || "123456";
@@ -53,9 +56,9 @@ function authUser(req) {
   return users.get(session.userId) || null;
 }
 
-function buildPortfolio() {
-  const holdings = DEMO_HOLDINGS.map((h) => {
-    const scheme = schemeByCode(h.schemeCode);
+async function buildPortfolio() {
+  const holdings = await Promise.all(DEMO_HOLDINGS.map(async (h) => {
+    const scheme = (await getCatalogScheme(h.schemeCode)) ?? schemeByCode(h.schemeCode);
     const currentNav = scheme?.nav ?? h.avgNav;
     const invested = h.units * h.avgNav;
     const currentValue = h.units * currentNav;
@@ -72,15 +75,17 @@ function buildPortfolio() {
       pnl,
       pnlPct: invested ? pnl / invested : 0,
     };
-  });
+  }));
   const invested = holdings.reduce((s, h) => s + h.invested, 0);
   const currentValue = holdings.reduce((s, h) => s + h.currentValue, 0);
-  const dayChange = holdings.reduce((s, h) => {
-    const scheme = schemeByCode(h.schemeCode);
+  const dayChange = (await Promise.all(DEMO_HOLDINGS.map(async (h) => {
+    const holding = holdings.find((x) => x.schemeCode === h.schemeCode);
+    const scheme = (await getCatalogScheme(h.schemeCode)) ?? schemeByCode(h.schemeCode);
     const prev = scheme?.prevNav ?? h.avgNav;
-    return s + h.units * (h.currentNav - prev);
-  }, 0);
+    return h.units * ((holding?.currentNav ?? h.avgNav) - prev);
+  }))).reduce((s, v) => s + v, 0);
   const totalReturns = currentValue - invested;
+  const insights = await buildPortfolioInsights(holdings, (code) => getCatalogScheme(code));
   return {
     currentValue,
     invested,
@@ -89,6 +94,7 @@ function buildPortfolio() {
     dayChange,
     dayChangePct: currentValue ? dayChange / (currentValue - dayChange) : 0,
     holdings,
+    insights,
   };
 }
 
@@ -96,6 +102,7 @@ const adapter = createVendorMFAdapter();
 const app = Fastify({ logger: true });
 
 await app.register(cors, { origin: true });
+await app.register(screenerRoutes, { prefix: "/v1/screener" });
 
 app.get("/v1/health", async () => ({
   status: "ok",
@@ -149,12 +156,12 @@ app.post("/v1/kyc/pan", async (req) => {
 
 app.get("/v1/schemes", async (req) => {
   const { category, q } = req.query;
-  const items = await adapter.listSchemes({ category, q });
-  return { items, total: items.length };
+  const items = await listCatalogSchemes({ category, q });
+  return { items, total: items.length, dataSource: getSnapshotMeta().dataSource };
 });
 
 app.get("/v1/schemes/:schemeCode", async (req) => {
-  const scheme = await adapter.getScheme(req.params.schemeCode);
+  const scheme = await getCatalogScheme(req.params.schemeCode);
   if (!scheme) throw app.httpErrors.notFound("Scheme not found");
   return scheme;
 });
@@ -168,10 +175,12 @@ app.get("/v1/portfolio", async (req) => {
 app.get("/v1/sips", async (req) => {
   const user = authUser(req);
   if (!user) throw app.httpErrors.unauthorized();
-  const items = DEMO_SIPS.map((s) => ({
+  const items = await Promise.all(DEMO_SIPS.map(async (s) => ({
     ...s,
-    schemeName: schemeByCode(s.schemeCode)?.name ?? s.schemeCode,
-  }));
+    schemeName: (await getCatalogScheme(s.schemeCode))?.name
+      ?? schemeByCode(s.schemeCode)?.name
+      ?? s.schemeCode,
+  })));
   return { items };
 });
 
@@ -191,7 +200,7 @@ app.post("/v1/sips", async (req) => {
     euin,
     investorRef: user.id,
   });
-  const scheme = schemeByCode(schemeCode);
+  const scheme = (await getCatalogScheme(schemeCode)) ?? schemeByCode(schemeCode);
   return {
     id: randomUUID(),
     schemeCode,
@@ -271,7 +280,18 @@ try {
   console.log(`Nivya BFF listening on http://localhost:${PORT}/v1 (demo OTP: ${DEMO_OTP})`);
 } catch (err) {
   if (err.code === "EADDRINUSE") {
-    console.error(`Port ${PORT} is already in use. Stop the other process or run: set PORT=3002 && npm run dev:api`);
+    try {
+      const health = await fetch(`http://127.0.0.1:${PORT}/v1/health`);
+      if (health.ok) {
+        console.log(`Port ${PORT} already has a healthy Nivya BFF — no need to start again.`);
+        process.exit(0);
+      }
+    } catch {
+      /* not our API */
+    }
+    console.error(
+      `Port ${PORT} is in use by another process. Free it (Task Manager / Stop-Process) or run: $env:PORT=3002; npm run start:api`
+    );
   }
   throw err;
 }
