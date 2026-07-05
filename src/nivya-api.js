@@ -102,6 +102,12 @@ export async function fetchSchemes() {
   return { items: res.items, dataSource: res.dataSource, total: res.total };
 }
 
+/** Full-catalog search for the @mention picker — hits GET /v1/schemes?q=... */
+export async function searchSchemes(q) {
+  const res = await request(`/schemes?q=${encodeURIComponent(q ?? "")}`);
+  return { items: res.items, total: res.total };
+}
+
 export async function recordConsent(schemeCode) {
   return request("/consents", {
     method: "POST",
@@ -267,11 +273,43 @@ export async function fetchScreenerMetrics(schemeCode) {
   return request(`/screener/metrics/${encodeURIComponent(schemeCode)}`);
 }
 
-export async function askFundChat({ question, fund, peerFunds = [], dataAsOn }) {
-  return request("/screener/chat", {
+/**
+ * Streams a fund Q&A answer via SSE. Calls onDelta(text) for each chunk as it arrives.
+ * @param {{ question: string, funds?: object[], history?: {role: string, text: string}[], onDelta: (text: string) => void }} params
+ */
+export async function streamFundChat({ question, funds = [], history = [], onDelta }) {
+  const res = await fetch(`${API_BASE}/screener/chat`, {
     method: "POST",
-    body: { question, fund, peerFunds, dataAsOn },
+    headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+    body: JSON.stringify({ question, funds, history }),
   });
+
+  if (!res.ok || !res.body) {
+    throw new Error(`Chat request failed (${res.status})`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const frames = buffer.split("\n\n");
+    buffer = frames.pop() ?? "";
+
+    for (const frame of frames) {
+      const isError = frame.startsWith("event: error");
+      const line = frame.split("\n").find((l) => l.startsWith("data: "));
+      if (!line) continue;
+      const payload = line.slice(6).replace(/\\n/g, "\n");
+      if (payload === "[DONE]") return;
+      if (isError) throw new Error(payload);
+      onDelta(payload);
+    }
+  }
 }
 
 const MOCK_SCHEMES_OFFLINE = [

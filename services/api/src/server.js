@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+import { config as loadEnv } from "dotenv";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { assertOrderCompliance, getDisclosures } from "@nivya/compliance";
@@ -12,6 +15,9 @@ import {
 import screenerRoutes from "./routes/screener.js";
 import { getCatalogScheme, getSnapshotMeta, listCatalogSchemes } from "./lib/snapshot-store.js";
 import { buildPortfolioInsights } from "./lib/portfolio-insights.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+loadEnv({ path: resolve(__dirname, "../.env") });
 
 const PORT = Number(process.env.PORT || 3001);
 const DEMO_OTP = process.env.DEMO_OTP || "123456";

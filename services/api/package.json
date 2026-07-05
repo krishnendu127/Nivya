@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "node --test src/__tests__/chat-tools.test.js"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
+    "@nivya/chatbot-core": "*",
     "@nivya/compliance": "*",
     "@nivya/screener-core": "*",
     "@nivya/vendor-mf": "*",
+    "dotenv": "^17.0.0",
     "fastify": "^5.4.0"
   }
 }
