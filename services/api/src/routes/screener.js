@@ -1,5 +1,7 @@
-import { CATEGORIES, buildMultiBucketResponse, answerFundQuestion } from "@nivya/screener-core";
+import { CATEGORIES, buildMultiBucketResponse } from "@nivya/screener-core";
+import { streamFundChatAnswer } from "@nivya/chatbot-core";
 import { getSnapshotMeta, loadSnapshotRaw } from "../lib/snapshot-store.js";
+import { buildChatToolProvider } from "../lib/chat-tools.js";
 
 const DISCLAIMER =
   "Mutual fund investments are subject to market risks. Past performance does not guarantee future results. " +
@@ -110,24 +112,35 @@ export default async function screenerRoutes(fastify) {
     schema: {
       body: {
         type: "object",
-        required: ["question", "fund"],
+        required: ["question"],
         properties: {
           question: { type: "string", minLength: 1, maxLength: 500 },
-          fund: { type: "object" },
-          peerFunds: { type: "array" },
+          funds: { type: "array" },
           dataAsOn: { type: "string" },
+          history: { type: "array" },
         },
       },
     },
   }, async (req, reply) => {
-    const { question, fund, peerFunds = [], dataAsOn } = req.body;
-    if (!fund?.schemeCode) {
-      return reply.status(400).send({ code: "FUND_REQUIRED", message: "fund.schemeCode required" });
+    const { question, funds = [], dataAsOn, history = [] } = req.body;
+
+    reply.hijack();
+    reply.raw.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    });
+
+    try {
+      const dataProvider = buildChatToolProvider();
+      for await (const chunk of streamFundChatAnswer({ funds, dataAsOn, question, history, dataProvider })) {
+        reply.raw.write(`data: ${chunk.replace(/\n/g, "\\n")}\n\n`);
+      }
+      reply.raw.write("data: [DONE]\n\n");
+    } catch (err) {
+      reply.raw.write(`event: error\ndata: ${String(err?.message ?? err)}\n\n`);
+    } finally {
+      reply.raw.end();
     }
-    const result = answerFundQuestion(fund, question, { peerFunds, dataAsOn });
-    return {
-      ...result,
-      disclaimer: `${result.disclaimer} ${DISCLAIMER}`,
-    };
   });
 }
