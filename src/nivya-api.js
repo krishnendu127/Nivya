@@ -52,13 +52,23 @@ export function mapHolding(h) {
 }
 
 export function mapSip(s) {
+  const statusMap = {
+    active: "Active",
+    paused: "Paused",
+    failed: "Failed",
+    pending_mandate: "Pending mandate",
+  };
+  const raw = String(s.status ?? "active").toLowerCase();
   return {
     id: s.schemeCode,
     sipKey: s.id,
     amount: s.amount,
     day: s.debitDay,
-    status: s.status === "active" ? "Active" : s.status === "paused" ? "Paused" : s.status,
+    status: statusMap[raw] ?? s.status,
     nextDebit: s.nextDebit || "—",
+    bankAccount: s.bankAccount,
+    failReason: s.failReason,
+    retryDate: s.retryDate,
   };
 }
 
@@ -250,11 +260,12 @@ export async function queryScreener(payload) {
   const body = {
     mode: payload.mode,
     horizonMonths: payload.horizonMonths,
-    buckets: (payload.buckets ?? []).map(({ riskPreference, categories, amountInr, topK }) => ({
+    buckets: (payload.buckets ?? []).map(({ riskPreference, categories, amountInr, topK, ranking }) => ({
       riskPreference,
       categories,
       amountInr,
       topK,
+      ...(ranking ? { ranking } : {}),
     })),
   };
   return request("/screener/query", { method: "POST", body });

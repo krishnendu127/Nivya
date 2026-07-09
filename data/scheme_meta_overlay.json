@@ -1,0 +1,13 @@
+{
+  "_comment": "Optional expense/AUM overlays keyed by schemeCode. Merged at snapshot load. Values for demo vendor codes; extend when a TER/AUM provider is wired.",
+  "ppfas-fc": { "expenseRatio": 0.77, "aum": 72000 },
+  "nippon-sc": { "expenseRatio": 0.93, "aum": 48000 },
+  "hdfc-ba": { "expenseRatio": 0.88, "aum": 86000 },
+  "quant-sc": { "expenseRatio": 0.77, "aum": 22000 },
+  "mirae-lc": { "expenseRatio": 0.52, "aum": 38000 },
+  "axis-lc": { "expenseRatio": 0.54, "aum": 31000 },
+  "sbi-contra": { "expenseRatio": 0.91, "aum": 29000 },
+  "icici-tech": { "expenseRatio": 0.97, "aum": 14000 },
+  "hdfc-elss": { "expenseRatio": 1.08, "aum": 15000 },
+  "nippon-liquid": { "expenseRatio": 0.21, "aum": 29000 }
+}

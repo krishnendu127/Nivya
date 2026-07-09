@@ -6,6 +6,8 @@ import {
   scoreScheme,
   rankSchemes,
   buildMultiBucketResponse,
+  resolveWeights,
+  DEFAULT_WEIGHTS,
 } from "../index.js";
 
 const SAMPLE_SCHEMES = [
@@ -68,6 +70,31 @@ describe("computeMetrics", () => {
   });
 });
 
+describe("resolveWeights", () => {
+  test("null ranking returns legacy defaults", () => {
+    const w = resolveWeights({ riskPreference: "MEDIUM", ranking: null });
+    assert.equal(w.returns, DEFAULT_WEIGHTS.returns);
+    assert.equal(w.consistency, DEFAULT_WEIGHTS.consistency);
+    assert.equal(w.expense, DEFAULT_WEIGHTS.expense);
+    assert.equal(w.riskFit, 0);
+    assert.equal(w.returnWindow, "3y");
+  });
+  test("low-cost raises expense weight", () => {
+    const w = resolveWeights({
+      riskPreference: "MEDIUM",
+      ranking: { expensePriority: "low-cost" },
+    });
+    assert.ok(w.expense > DEFAULT_WEIGHTS.expense);
+  });
+  test("LOW risk raises riskFit weight", () => {
+    const w = resolveWeights({
+      riskPreference: "LOW",
+      ranking: { consistencyPref: "stable" },
+    });
+    assert.ok(w.riskFit > 0);
+  });
+});
+
 describe("scoreScheme", () => {
   test("performanceScore is 0–100", () => {
     const peers = SAMPLE_SCHEMES.filter((s) => s.category === "small-cap");
@@ -78,6 +105,12 @@ describe("scoreScheme", () => {
     const peers = SAMPLE_SCHEMES.filter((s) => s.category === "small-cap");
     const scored = scoreScheme(peers[0], peers);
     assert.equal(scored.planType, "Regular");
+  });
+  test("legacy call without ranking matches 60/20/20 shape", () => {
+    const peers = SAMPLE_SCHEMES.filter((s) => s.category === "large-cap");
+    const scored = scoreScheme(peers[0], peers);
+    assert.equal(scored.scoreBreakdown.weights.returns, 0.6);
+    assert.equal(scored.scoreBreakdown.returnWindow, "3y");
   });
 });
 
@@ -98,6 +131,33 @@ describe("rankSchemes", () => {
       topK: 10,
     });
     assert.ok(results.every((r) => r.category === "large-cap"));
+  });
+  test("avoided Amcs are excluded", () => {
+    const results = rankSchemes(SAMPLE_SCHEMES, {
+      riskPreference: "MEDIUM",
+      categories: ["large-cap"],
+      ranking: { avoidedAmcs: ["AMC3"] },
+      topK: 10,
+    });
+    assert.ok(results.every((r) => !String(r.amc).includes("AMC3")));
+  });
+  test("preferred Amc boosts score vs peer", () => {
+    const withPref = rankSchemes(SAMPLE_SCHEMES, {
+      riskPreference: "MEDIUM",
+      categories: ["large-cap"],
+      ranking: { preferredAmcs: ["AMC4"], expensePriority: "balanced" },
+      topK: 10,
+    });
+    const plain = rankSchemes(SAMPLE_SCHEMES, {
+      riskPreference: "MEDIUM",
+      categories: ["large-cap"],
+      topK: 10,
+    });
+    assert.ok(withPref.length >= 1 && plain.length >= 1);
+    const deltaPref = withPref.find((r) => r.schemeCode === "d");
+    const deltaPlain = plain.find((r) => r.schemeCode === "d");
+    assert.ok(deltaPref && deltaPlain);
+    assert.ok(deltaPref.performanceScore >= deltaPlain.performanceScore);
   });
 });
 

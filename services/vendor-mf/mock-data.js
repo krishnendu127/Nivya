@@ -22,9 +22,17 @@ export const DEMO_HOLDINGS = [
 ];
 
 export const DEMO_SIPS = [
-  { id: "sip-1", schemeCode: "ppfas-fc", amount: 5000, debitDay: 5, status: "active", nextDebit: "5 Jul" },
-  { id: "sip-2", schemeCode: "nippon-sc", amount: 3000, debitDay: 10, status: "active", nextDebit: "10 Jul" },
-  { id: "sip-3", schemeCode: "hdfc-ba", amount: 2000, debitDay: 1, status: "paused", nextDebit: null },
+  { id: "sip-1", schemeCode: "ppfas-fc", amount: 5000, debitDay: 5, status: "active", nextDebit: "5 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-2", schemeCode: "nippon-sc", amount: 3000, debitDay: 10, status: "active", nextDebit: "10 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-3", schemeCode: "mirae-lc", amount: 3500, debitDay: 15, status: "active", nextDebit: "15 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-4", schemeCode: "axis-lc", amount: 1500, debitDay: 20, status: "active", nextDebit: "20 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-5", schemeCode: "sbi-contra", amount: 2000, debitDay: 12, status: "active", nextDebit: "12 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-6", schemeCode: "icici-tech", amount: 3000, debitDay: 18, status: "active", nextDebit: "18 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-7", schemeCode: "nippon-liquid", amount: 2000, debitDay: 22, status: "active", nextDebit: "22 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-8", schemeCode: "hdfc-elss", amount: 1500, debitDay: 25, status: "active", nextDebit: "25 Jul", bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-9", schemeCode: "hdfc-ba", amount: 2000, debitDay: 1, status: "paused", nextDebit: null, bankAccount: "HDFC Bank •••• 4521" },
+  { id: "sip-10", schemeCode: "quant-sc", amount: 4000, debitDay: 8, status: "failed", nextDebit: "8 Jul", bankAccount: "HDFC Bank •••• 4521", failReason: "Insufficient balance", retryDate: "17 Jul" },
+  { id: "sip-11", schemeCode: "hdfc-ba", amount: 1500, debitDay: 25, status: "pending_mandate", nextDebit: "After mandate", bankAccount: "HDFC Bank •••• 4521" },
 ];
 
 export function schemeByCode(code) {

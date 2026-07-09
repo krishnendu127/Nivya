@@ -7,6 +7,6 @@
     ".": "./src/index.js"
   },
   "scripts": {
-    "test": "node --test src/__tests__/ranking.test.js src/__tests__/fund-chat.test.js"
+    "test": "node --test src/__tests__/ranking.test.js src/__tests__/fund-chat.test.js src/__tests__/weights.test.js"
   }
 }

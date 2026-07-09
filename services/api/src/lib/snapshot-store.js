@@ -10,9 +10,65 @@ export const SNAPSHOT_PATH = resolve(
     ?? resolve(__dirname, "../../../../data/screener_snapshot.json")
 );
 
+const META_OVERLAY_PATH = resolve(
+  process.env.SCREENER_META_OVERLAY_PATH
+    ?? resolve(__dirname, "../../../../data/scheme_meta_overlay.json")
+);
+
 let _snapshotCache = null;
 let _snapshotMtime = 0;
 let _dataSource = "unknown";
+let _metaOverlay = null;
+
+async function loadMetaOverlay() {
+  if (_metaOverlay) return _metaOverlay;
+  try {
+    const raw = await readFile(META_OVERLAY_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    _metaOverlay = parsed;
+    return parsed;
+  } catch {
+    _metaOverlay = {};
+    return _metaOverlay;
+  }
+}
+
+/** Typical Regular-plan TER (%) by category — last-resort when snapshot has null. Overlay / real TER wins. */
+const CATEGORY_EXPENSE_ESTIMATE = {
+  liquid: 0.25,
+  "ultra-short": 0.35,
+  "money-market": 0.3,
+  "conservative-hybrid": 0.9,
+  "large-cap": 1.05,
+  "flexi-cap": 1.15,
+  hybrid: 1.1,
+  "balanced-adv": 1.05,
+  index: 0.55,
+  "mid-cap": 1.2,
+  "small-cap": 1.25,
+  elss: 1.15,
+  sectoral: 1.3,
+  contra: 1.15,
+};
+
+/** Fill null expense/AUM from overlay file when present. */
+function applyMetaOverlay(schemes, overlay) {
+  if (!overlay || typeof overlay !== "object") overlay = {};
+  return schemes.map((s) => {
+    const meta = overlay[String(s.schemeCode)];
+    let expenseRatio = s.expenseRatio ?? meta?.expenseRatio ?? null;
+    let aum = s.aum ?? meta?.aum ?? null;
+    let expenseSource = s.expenseSource ?? null;
+    if (expenseRatio == null && s.category && CATEGORY_EXPENSE_ESTIMATE[s.category] != null) {
+      expenseRatio = CATEGORY_EXPENSE_ESTIMATE[s.category];
+      expenseSource = "category-estimate";
+    } else if (expenseRatio != null && !expenseSource) {
+      expenseSource = meta?.expenseRatio != null ? "overlay" : "snapshot";
+    }
+    if (aum == null && meta?.aum != null) aum = meta.aum;
+    return { ...s, expenseRatio, aum, expenseSource };
+  });
+}
 
 function categoryLabel(id = "") {
   const ui = {
@@ -53,13 +109,14 @@ function mapVendorMockSchemes(SCHEMES) {
 
 /** @returns {Promise<object[]>} raw snapshot rows */
 export async function loadSnapshotRaw() {
+  const overlay = await loadMetaOverlay();
   try {
     const fileStat = await stat(SNAPSHOT_PATH);
     if (_snapshotCache && fileStat.mtimeMs === _snapshotMtime) {
       return _snapshotCache;
     }
     const raw = await readFile(SNAPSHOT_PATH, "utf8");
-    _snapshotCache = JSON.parse(raw);
+    _snapshotCache = applyMetaOverlay(JSON.parse(raw), overlay);
     _snapshotMtime = fileStat.mtimeMs;
     _dataSource = _snapshotCache.length > 0 && /^\d+$/.test(String(_snapshotCache[0]?.schemeCode ?? ""))
       ? "mfapi-snapshot"
@@ -68,7 +125,7 @@ export async function loadSnapshotRaw() {
   } catch (err) {
     if (!_snapshotCache) {
       const { SCHEMES } = await import("@nivya/vendor-mf");
-      _snapshotCache = mapVendorMockSchemes(SCHEMES);
+      _snapshotCache = applyMetaOverlay(mapVendorMockSchemes(SCHEMES), overlay);
       _dataSource = "vendor-mock-fallback";
       console.warn(`[snapshot] missing at ${SNAPSHOT_PATH}; using vendor mock (${err.message})`);
     }

@@ -1,15 +1,28 @@
 /**
- * Chat input with an Instagram/Slack-style "@mention" fund picker.
- * Typing "@" opens a debounced search over the full fund catalog (GET /v1/schemes?q=...).
- * Selecting a match inserts an "@[Display Name] " token and records it in a
- * per-draft resolution map; on submit, tokens in the raw text are resolved back
- * to full fund objects and handed to onSubmit alongside the raw text.
+ * Chat input with @mention fund picker (Nivya catalog search).
  */
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { AtSign, ArrowRight, ChevronRight, Search } from "lucide-react";
 import { searchSchemes } from "./nivya-api.js";
 
 const MENTION_TOKEN = /@\[([^\]]+)\]/g;
+const AV_COLORS = ["#2456BE", "#0E9C8E", "#7A5AF8", "#E8943A", "#D6409F", "#16A35A"];
+
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0);
+}
+function avColor(s) { return AV_COLORS[hashStr(s) % AV_COLORS.length]; }
+
+function FundLogo({ amc, size = 32 }) {
+  const label = String(amc ?? "?").slice(0, 2).toUpperCase();
+  return (
+    <div className="fq-fund-logo" style={{ background: avColor(amc ?? ""), width: size, height: size, fontSize: size * 0.34 }}>
+      {label}
+    </div>
+  );
+}
 
 function findTrigger(text, cursor) {
   const uptoCursor = text.slice(0, cursor);
@@ -20,10 +33,20 @@ function findTrigger(text, cursor) {
   return { atIdx, query: between };
 }
 
+function schemeLabel(s) {
+  return (s.name ?? s.schemeName ?? "").replace(/\s*-\s*Regular.*$/i, "").trim();
+}
+
+function categoryLabel(s) {
+  const cat = s.category ?? "";
+  if (!cat) return "Mutual Fund";
+  return cat.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) + " Fund";
+}
+
 /**
- * @param {{ onSubmit: (text: string, mentionedFunds: object[]) => void, placeholder?: string, disabled?: boolean }} props
+ * @param {{ onSubmit: (text: string, mentionedFunds: object[]) => void, placeholder?: string, disabled?: boolean, rateLimited?: boolean }} props
  */
-export function FundMentionInput({ onSubmit, placeholder, disabled }) {
+export function FundMentionInput({ onSubmit, placeholder, disabled, rateLimited }) {
   const [text, setText] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [highlightIdx, setHighlightIdx] = useState(0);
@@ -43,7 +66,7 @@ export function FundMentionInput({ onSubmit, placeholder, disabled }) {
       try {
         const res = await searchSchemes(query);
         if (seq === requestSeqRef.current) {
-          setSuggestions(res.items.slice(0, 8));
+          setSuggestions(res.items.slice(0, 6));
           setHighlightIdx(0);
         }
       } catch {
@@ -69,7 +92,7 @@ export function FundMentionInput({ onSubmit, placeholder, disabled }) {
 
   function selectSuggestion(scheme) {
     if (!trigger) return;
-    const displayName = (scheme.name ?? scheme.schemeName ?? scheme.schemeCode).replace(/\s*-\s*Regular.*$/i, "").trim();
+    const displayName = schemeLabel(scheme);
     const cursor = inputRef.current?.selectionStart ?? text.length;
     const before = text.slice(0, trigger.atIdx);
     const after = text.slice(cursor);
@@ -102,12 +125,26 @@ export function FundMentionInput({ onSubmit, placeholder, disabled }) {
 
   function submit() {
     const raw = text.trim();
-    if (!raw) return;
+    if (!raw || disabled || rateLimited) return;
     onSubmit(raw, extractMentions(raw));
     setText("");
     setSuggestions([]);
     setTrigger(null);
     mentionMapRef.current.clear();
+  }
+
+  function insertAt() {
+    const el = inputRef.current;
+    const cursor = el?.selectionStart ?? text.length;
+    const next = `${text.slice(0, cursor)}@${text.slice(cursor)}`;
+    setText(next);
+    setTrigger({ atIdx: cursor, query: "" });
+    runSearch("");
+    requestAnimationFrame(() => {
+      el?.focus();
+      const pos = cursor + 1;
+      el?.setSelectionRange(pos, pos);
+    });
   }
 
   function handleKeyDown(e) {
@@ -134,57 +171,70 @@ export function FundMentionInput({ onSubmit, placeholder, disabled }) {
         return;
       }
     }
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       submit();
     }
   }
 
+  const pickerOpen = suggestions.length > 0;
+  const query = trigger?.query ?? "";
+
   return (
-    <div style={{ position: "relative", flex: 1, display: "flex", gap: 8 }}>
-      {suggestions.length > 0 && (
-        <div
-          role="listbox"
-          aria-label="Fund suggestions"
-          style={{
-            position: "absolute", bottom: "100%", left: 0, right: 44, marginBottom: 8,
-            background: "#fff", border: "1px solid #EAECF0", borderRadius: 12,
-            boxShadow: "0 -4px 20px rgba(0,0,0,.12)", maxHeight: 220, overflowY: "auto", zIndex: 60,
-          }}>
+    <div className="fq-compose-wrap">
+      {pickerOpen && (
+        <div className="fq-picker" role="listbox" aria-label="Fund suggestions">
+          <div className="fq-picker-hd">Funds (from Nivya catalog)</div>
           {suggestions.map((s, i) => (
-            <div
+            <button
               key={s.schemeCode}
+              type="button"
               role="option"
               aria-selected={i === highlightIdx}
+              className={`fq-picker-row ${i === highlightIdx ? "on" : ""}`}
               onMouseDown={(e) => { e.preventDefault(); selectSuggestion(s); }}
               onMouseEnter={() => setHighlightIdx(i)}
-              style={{
-                padding: "8px 12px", cursor: "pointer",
-                background: i === highlightIdx ? "#EAF7F3" : "#fff",
-                borderBottom: "1px solid #F2F4F7",
-              }}>
-              <div style={{ fontSize: 12.5, fontWeight: 700, color: "#0D1526" }}>
-                {(s.name ?? s.schemeName ?? "").replace(/\s*-\s*Regular.*$/i, "")}
+            >
+              <FundLogo amc={s.amc}/>
+              <div className="meta">
+                <b>{schemeLabel(s)}</b>
+                <span>{categoryLabel(s)}</span>
               </div>
-              <div style={{ fontSize: 10.5, color: "#98A2B3", fontWeight: 600 }}>{s.amc}</div>
-            </div>
+              <ChevronRight size={16} className="chev"/>
+            </button>
           ))}
+          {query && (
+            <button type="button" className="fq-picker-more" onMouseDown={(e) => e.preventDefault()}>
+              <Search size={14}/>
+              See more results for &ldquo;{query}&rdquo;
+            </button>
+          )}
         </div>
       )}
-      <input
-        ref={inputRef}
-        value={text}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        disabled={disabled}
-        placeholder={placeholder ?? "Ask about a fund, or type @ to mention one…"}
-        style={{ flex: 1, border: "1.5px solid #EAECF0", borderRadius: 12, padding: "11px 14px",
-          fontSize: 13, fontWeight: 600, fontFamily: "inherit", outline: "none" }}
-      />
-      <button type="button" onClick={submit} disabled={!text.trim() || disabled}
-        style={{ width: 44, height: 44, borderRadius: 12, border: "none", background: "#16213E", color: "#fff",
-          display: "grid", placeItems: "center", cursor: "pointer", opacity: text.trim() ? 1 : 0.5, flex: "none" }}>
-        <Send size={18} />
-      </button>
+
+      <div className="fq-input-row">
+        <input
+          ref={inputRef}
+          className="fq-input"
+          value={text}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          disabled={disabled || rateLimited}
+          placeholder={placeholder ?? "Ask here or @mention a fund…"}
+        />
+        <button type="button" className="fq-at" onClick={insertAt} disabled={disabled || rateLimited} aria-label="Mention fund">
+          <AtSign size={18}/>
+        </button>
+        <button
+          type="button"
+          className="fq-send"
+          onClick={submit}
+          disabled={!text.trim() || disabled || rateLimited}
+          aria-label="Send"
+        >
+          <ArrowRight size={18}/>
+        </button>
+      </div>
     </div>
   );
 }

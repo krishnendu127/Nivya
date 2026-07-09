@@ -1,29 +1,68 @@
 /**
- * Mutual Fund Q&A chat — general MF conversation plus @mention-grounded fund data (not investment advice).
+ * Fund Q&A — Nivya mutual fund research assistant (factual, not investment advice).
  */
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { MessageCircle, X, Bot, User } from "lucide-react";
-import { CHAT_DISCLAIMER } from "../packages/screener-core/src/fund-chat.js";
+import {
+  X, Shield, Bot, Ban, UserRound, HelpCircle, Loader2,
+} from "lucide-react";
+import { isAdviceQuestion } from "../packages/chatbot-core/src/guardrails.js";
 import { streamFundChat } from "./nivya-api.js";
 import { FundMentionInput } from "./FundMentionInput.jsx";
 
-const GENERAL_SUGGESTIONS = [
+const RATE_LIMIT_MS = 20000;
+
+const AV_COLORS = ["#2456BE", "#0E9C8E", "#7A5AF8", "#E8943A", "#D6409F", "#16A35A"];
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0); }
+function avColor(s) { return AV_COLORS[hashStr(s) % AV_COLORS.length]; }
+
+const EMPTY_SUGGESTIONS = [
   "What is a SIP?",
-  "Regular vs Direct plan?",
-  "What does expense ratio mean?",
+  "What is expense ratio?",
+  "Compare Flexi Cap vs Large Cap",
+  "@HDFC Flexi Cap Fund past 3Y CAGR?",
 ];
+
+const FEATURES = [
+  { ic: HelpCircle, text: "Ask general MF questions" },
+  { ic: AtIcon, text: "@mention a fund for specific data" },
+  { ic: Shield, text: "All data is from official sources" },
+  { ic: Ban, text: "I don't provide advice or recommendations" },
+];
+
+function AtIcon(props) {
+  return <span className="fq-at-ic" {...props}>@</span>;
+}
+
+function normalizeFund(f) {
+  if (!f) return null;
+  if (f.schemeCode) return f;
+  return {
+    schemeCode: f.id,
+    schemeName: f.s,
+    name: f.s,
+    amc: f.h,
+    category: f.cat,
+    pastReturn1y: f.r1,
+    pastReturn3y: f.r3,
+    pastReturn5y: f.r5,
+    nav: f.nav,
+    riskometer: f.risk,
+    expenseRatio: f.expense,
+  };
+}
 
 function fundShortName(fund) {
   return String(fund?.schemeName ?? fund?.name ?? "this fund").replace(/\s*-\s*Regular.*$/i, "").trim();
 }
 
 function fundSuggestions(fund) {
-  const short = fundShortName(fund).split(" ")[0] ?? "this fund";
+  const short = fundShortName(fund);
   return [
-    `Tell me about ${short}`,
-    "What is the past 3Y CAGR?",
-    "What is the expense ratio?",
+    "Past 1Y",
+    "Past 5Y",
+    "Expense ratio",
+    `What is ${short.split(" ")[0]}'s 3Y CAGR?`,
   ];
 }
 
@@ -34,22 +73,84 @@ function renderAnswer(text) {
   );
 }
 
-function ChatMessage({ role, text }) {
-  const isBot = role === "bot";
+function FundLogo({ amc, size = 28 }) {
   return (
-    <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "flex-start",
-      flexDirection: isBot ? "row" : "row-reverse" }}>
-      <div style={{ width: 28, height: 28, borderRadius: 999, flex: "none",
-        background: isBot ? "#EAF7F3" : "#E8F0FF", color: isBot ? "#0B7E78" : "#2456BE",
-        display: "grid", placeItems: "center" }}>
-        {isBot ? <Bot size={14}/> : <User size={14}/>}
+    <div className="fq-fund-logo" style={{ background: avColor(amc ?? ""), width: size, height: size, fontSize: size * 0.34 }}>
+      {String(amc ?? "?").slice(0, 2).toUpperCase()}
+    </div>
+  );
+}
+
+function EmptyState({ onPick }) {
+  return (
+    <div className="fq-empty">
+      <div className="fq-welcome">
+        <div className="fq-welcome-ic"><Bot size={28}/></div>
+        <h3>Hi! I&apos;m Nivya 👋</h3>
+        <p>Your mutual fund research assistant</p>
+        <ul>
+          {FEATURES.map(({ ic: Icon, text }) => (
+            <li key={text}><Icon size={15}/>{text}</li>
+          ))}
+        </ul>
       </div>
-      <div style={{ maxWidth: "82%", padding: "10px 12px", borderRadius: 14,
-        fontSize: 12.5, lineHeight: 1.5, fontWeight: 600,
-        background: isBot ? "#fff" : "#16213E", color: isBot ? "#0D1526" : "#fff",
-        border: isBot ? "1px solid #EAECF0" : "none",
-        whiteSpace: "pre-wrap" }}>
-        {renderAnswer(text)}
+      <div className="fq-try">
+        <span>Try these questions</span>
+        {EMPTY_SUGGESTIONS.map((q) => (
+          <button key={q} type="button" onClick={() => onPick(q)}>{q}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AdviceBlocked({ onHelp, onLearn }) {
+  return (
+    <div className="fq-advice">
+      <Shield size={18}/>
+      <b>I can&apos;t help with advice or recommendations.</b>
+      <p>
+        I can share factual data about funds — past returns, expense ratio, risk metrics — but I cannot
+        tell you whether to buy, sell, or hold. Investment decisions are yours; Nivya executes as your AMFI-registered distributor.
+      </p>
+      <div className="fq-advice-btns">
+        <button type="button" onClick={onHelp}>See what I can answer</button>
+        <button type="button" className="ghost" onClick={onLearn}>Learn how to evaluate funds</button>
+      </div>
+    </div>
+  );
+}
+
+function ChatBubble({ role, text, type }) {
+  if (type === "advice") {
+    return null;
+  }
+  const isUser = role === "user";
+  return (
+    <div className={`fq-msg ${isUser ? "user" : "bot"}`}>
+      {!isUser && (
+        <div className="fq-avatar bot"><Bot size={14}/></div>
+      )}
+      <div className="bubble">
+        {text ? renderAnswer(text) : <Loader2 size={16} className="fq-spin"/>}
+      </div>
+      {isUser && (
+        <div className="fq-avatar user"><UserRound size={14}/></div>
+      )}
+    </div>
+  );
+}
+
+function RateLimitBanner({ seconds }) {
+  return (
+    <div className="fq-rate">
+      <div>
+        <b>You&apos;re sending questions too quickly.</b>
+        <p>Please wait {seconds} seconds before sending another message.</p>
+      </div>
+      <div className="fq-rate-timer" aria-hidden>
+        <span>{seconds}</span>
+        <small>sec</small>
       </div>
     </div>
   );
@@ -59,134 +160,166 @@ function ChatMessage({ role, text }) {
  * @param {{ results?: object, initialFund?: object|null, onClose: function }} props
  */
 export function FundChatPanel({ results, initialFund = null, onClose }) {
-  const [activeFunds, setActiveFunds] = useState(() => (initialFund ? [initialFund] : []));
-  const [messages, setMessages] = useState(() => [{
-    id: "welcome",
-    role: "bot",
-    text: initialFund
-      ? `Hi — ask factual questions about **${fundShortName(initialFund)}**, or type **@** to bring another fund into the conversation. I share past returns, scores, and ranking reasons — not buy/sell advice.`
-      : "Hi — ask me anything about mutual funds. Type **@** to bring a specific fund's data into the conversation.",
-  }]);
+  const normInitial = normalizeFund(initialFund);
+  const [activeFunds, setActiveFunds] = useState(() => (normInitial ? [normInitial] : []));
+  const [messages, setMessages] = useState([]);
+  const [rateLimitSec, setRateLimitSec] = useState(0);
+  const [inputDisabled, setInputDisabled] = useState(false);
+
   const scrollRef = useRef(null);
+  const lastSendRef = useRef(0);
+
+  const isEmpty = messages.length === 0;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+  }, [messages, rateLimitSec]);
+
+  useEffect(() => {
+    if (rateLimitSec <= 0) return undefined;
+    const id = setTimeout(() => setRateLimitSec((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [rateLimitSec]);
 
   const sendQuestion = useCallback((rawText, mentionedFunds = []) => {
     const q = String(rawText ?? "").trim();
-    if (!q) return;
+    if (!q || rateLimitSec > 0) return;
+
+    const now = Date.now();
+    if (lastSendRef.current && now - lastSendRef.current < RATE_LIMIT_MS) {
+      const remaining = Math.ceil((RATE_LIMIT_MS - (now - lastSendRef.current)) / 1000);
+      setRateLimitSec(remaining);
+      return;
+    }
+    lastSendRef.current = now;
 
     const funds = mentionedFunds.length > 0 ? mentionedFunds : activeFunds;
     if (mentionedFunds.length > 0) setActiveFunds(mentionedFunds);
 
     const displayText = q.replace(/@\[([^\]]+)\]/g, "@$1");
 
+    if (isAdviceQuestion(displayText)) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `u-${Date.now()}`, role: "user", text: displayText },
+        { id: `a-${Date.now()}`, role: "bot", type: "advice", text: "" },
+      ]);
+      return;
+    }
+
     const historyForLLM = messages
-      .filter((m) => m.id !== "welcome")
+      .filter((m) => m.type !== "advice" && m.text)
       .map((m) => ({ role: m.role, text: m.text }));
 
     setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text: displayText }]);
 
     const botId = `b-${Date.now()}`;
     setMessages((prev) => [...prev, { id: botId, role: "bot", text: "" }]);
+    setInputDisabled(true);
 
     streamFundChat({
       question: q,
       funds,
-      dataAsOn: results?.dataAsOn,
       history: historyForLLM,
       onDelta: (chunk) => {
         setMessages((prev) =>
           prev.map((m) => (m.id === botId ? { ...m, text: m.text + chunk } : m))
         );
       },
-    }).catch((err) => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === botId
-            ? { ...m, text: `Sorry, something went wrong (${err.message}). Please try again.` }
-            : m
-        )
-      );
-    });
-  }, [activeFunds, results?.dataAsOn, messages]);
+    })
+      .catch((err) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === botId
+              ? { ...m, text: `Sorry, something went wrong (${err.message}). Please try again.` }
+              : m
+          )
+        );
+      })
+      .finally(() => setInputDisabled(false));
+  }, [activeFunds, results?.dataAsOn, messages, rateLimitSec]);
 
   const removeActiveFund = useCallback((schemeCode) => {
     setActiveFunds((prev) => prev.filter((f) => f.schemeCode !== schemeCode));
   }, []);
 
-  const suggestions = activeFunds[0] ? fundSuggestions(activeFunds[0]) : GENERAL_SUGGESTIONS;
+  const suggestions = activeFunds[0] ? fundSuggestions(activeFunds[0]) : [];
 
   const panel = (
-    <div
-      role="dialog"
-      aria-label="Fund Q&A"
-      style={{ position: "absolute", inset: 0, zIndex: 55, display: "flex", flexDirection: "column",
-        background: "rgba(13,21,38,.45)" }}
-      onClick={onClose}
-    >
-      <div
-        style={{ marginTop: "auto", background: "#F4F6F9", borderRadius: "22px 22px 0 0",
-          maxHeight: "78%", display: "flex", flexDirection: "column", boxShadow: "0 -8px 40px rgba(0,0,0,.15)" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid #EAECF0", background: "#fff",
-          borderRadius: "22px 22px 0 0" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <MessageCircle size={18} color="#0B7E78"/>
-              <span style={{ fontSize: 15, fontWeight: 800 }}>Fund Q&A</span>
-            </div>
-            <button type="button" onClick={onClose}
-              style={{ border: "none", background: "#F2F4F7", borderRadius: 999, width: 32, height: 32,
-                display: "grid", placeItems: "center", cursor: "pointer" }}>
-              <X size={18}/>
-            </button>
+    <div className="fq-scrim" onClick={onClose} role="dialog" aria-label="Fund Q&A">
+      <div className="fq-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="fq-head">
+          <div className="fq-head-top">
+            <h2>Fund Q&A</h2>
+            <button type="button" className="iconbtn" onClick={onClose} aria-label="Close"><X size={18}/></button>
           </div>
-          {activeFunds.length > 0 && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 10 }}>
+          <p className="fq-disclaimer">
+            <Shield size={12}/>
+            Factual info only. Not investment advice or recommendation.
+          </p>
+        </div>
+
+        <div className="fq-active">
+          <span className="lbl">Active funds in this chat</span>
+          {activeFunds.length === 0 ? (
+            <p className="none">None yet. @mention a fund to get started.</p>
+          ) : (
+            <div className="fq-chips">
               {activeFunds.map((f) => (
-                <span key={f.schemeCode} style={{ display: "flex", alignItems: "center", gap: 6,
-                  fontSize: 12.5, fontWeight: 700, color: "#2456BE",
-                  background: "#E8F0FF", borderRadius: 999, padding: "5px 8px 5px 14px" }}>
-                  @{fundShortName(f)}
-                  <button type="button" onClick={() => removeActiveFund(f.schemeCode)}
-                    aria-label={`Remove ${fundShortName(f)} from context`}
-                    style={{ border: "none", background: "rgba(36,86,190,.15)", color: "#2456BE",
-                      borderRadius: 999, width: 18, height: 18, display: "grid", placeItems: "center",
-                      cursor: "pointer", flex: "none", padding: 0 }}>
+                <span key={f.schemeCode} className="fq-chip">
+                  <FundLogo amc={f.amc} size={22}/>
+                  {fundShortName(f)}
+                  <button type="button" onClick={() => removeActiveFund(f.schemeCode)} aria-label={`Remove ${fundShortName(f)}`}>
                     <X size={12}/>
                   </button>
                 </span>
               ))}
             </div>
           )}
-          <div style={{ fontSize: 10, color: "#667085", fontWeight: 600, lineHeight: 1.4 }}>
-            {CHAT_DISCLAIMER}
-          </div>
         </div>
 
-        <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "14px 16px" }}>
-          {messages.map((m) => <ChatMessage key={m.id} role={m.role} text={m.text}/>)}
+        <div className="fq-body" ref={scrollRef}>
+          {isEmpty ? (
+            <EmptyState onPick={sendQuestion}/>
+          ) : (
+            messages.map((m) => (
+              <React.Fragment key={m.id}>
+                {m.type === "advice" ? (
+                  <AdviceBlocked
+                    onHelp={() => sendQuestion("What can you help me with?")}
+                    onLearn={() => sendQuestion("How do I evaluate mutual funds?")}
+                  />
+                ) : (
+                  <ChatBubble role={m.role} text={m.text} type={m.type}/>
+                )}
+              </React.Fragment>
+            ))
+          )}
         </div>
 
-        {suggestions.length > 0 && (
-          <div style={{ padding: "0 16px 8px", display: "flex", gap: 6, overflowX: "auto", flexWrap: "nowrap" }}>
-            {suggestions.slice(0, 4).map((s) => (
-              <button key={s} type="button" onClick={() => sendQuestion(s)}
-                style={{ flex: "0 0 auto", border: "1px solid #CDEDE3", background: "#EAF7F3", borderRadius: 999,
-                  padding: "6px 10px", fontSize: 10.5, fontWeight: 700, color: "#0B7E78", cursor: "pointer",
-                  fontFamily: "inherit", maxWidth: 200, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        {rateLimitSec > 0 && <RateLimitBanner seconds={rateLimitSec}/>}
+
+        {suggestions.length > 0 && !isEmpty && (
+          <div className="fq-quick">
+            {suggestions.map((s) => (
+              <button key={s} type="button" onClick={() => sendQuestion(s)} disabled={rateLimitSec > 0 || inputDisabled}>
                 {s}
               </button>
             ))}
           </div>
         )}
 
-        <div style={{ padding: "10px 16px 18px", borderTop: "1px solid #EAECF0", background: "#fff" }}>
-          <FundMentionInput onSubmit={sendQuestion} />
+        <div className="fq-compose">
+          <FundMentionInput
+            onSubmit={sendQuestion}
+            disabled={inputDisabled}
+            rateLimited={rateLimitSec > 0}
+          />
         </div>
+
+        <p className="fq-foot">
+          Nivya can make mistakes. Verify important information. Source: AMFI | AMC Factsheets.
+        </p>
       </div>
     </div>
   );
@@ -195,16 +328,11 @@ export function FundChatPanel({ results, initialFund = null, onClose }) {
   return host ? createPortal(panel, host) : panel;
 }
 
-/** Floating button to open chat on screener results */
+/** Floating button to open chat */
 export function FundChatFab({ onClick }) {
   return (
-    <button type="button" onClick={onClick}
-      style={{ position: "absolute", right: 16, bottom: 88, zIndex: 50, width: 52, height: 52,
-        borderRadius: 999, border: "none", background: "linear-gradient(135deg,#19C9AE,#2456BE)",
-        color: "#fff", boxShadow: "0 8px 24px rgba(36,86,190,.35)", cursor: "pointer",
-        display: "grid", placeItems: "center" }}
-      aria-label="Ask about funds">
-      <MessageCircle size={22}/>
+    <button type="button" className="fq-fab" onClick={onClick} aria-label="Ask about funds">
+      <HelpCircle size={22}/>
     </button>
   );
 }

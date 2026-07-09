@@ -1,8 +1,29 @@
 /**
- * @nivya/screener-core — Pure rule-based ranking engine (Phase 1)
+ * @nivya/screener-core — Preference-aware rule-based ranking (Phase A)
+ * Modular scorers + dynamic weights. No ranking prefs → legacy 60/20/20.
  * No ML, no side-effects. All functions are pure and unit-testable.
- * Phase 2: packages/screener-core/ml/ (XGBoost stub, not wired in v1)
  */
+
+import { resolveWeights, DEFAULT_WEIGHTS } from "./weights.js";
+import {
+  scoreReturns,
+  scoreConsistency,
+  scoreExpense,
+  scoreRiskFit,
+  scoreAmc,
+  collectExtraReasons,
+  aggregateScores,
+} from "./scorers.js";
+
+export { resolveWeights, DEFAULT_WEIGHTS } from "./weights.js";
+export {
+  scoreReturns,
+  scoreConsistency,
+  scoreExpense,
+  scoreRiskFit,
+  scoreAmc,
+  pctRank,
+} from "./scorers.js";
 
 export const CATEGORIES = [
   { id: "large-cap",    label: "Large Cap",           riskBand: "MEDIUM" },
@@ -86,80 +107,53 @@ export function computeMetrics(navSeries) {
   };
 }
 
-export function scoreScheme(scheme, categoryPeers) {
+/**
+ * @param {object} scheme
+ * @param {object[]} categoryPeers
+ * @param {{ riskPreference?: string, ranking?: object|null }} [scoreOptions]
+ */
+export function scoreScheme(scheme, categoryPeers, scoreOptions = {}) {
   const peers = categoryPeers.filter((p) => p.schemeCode !== scheme.schemeCode);
-  const all = [scheme, ...peers];
+  const weights = resolveWeights({
+    riskPreference: scoreOptions.riskPreference ?? "MEDIUM",
+    ranking: scoreOptions.ranking ?? null,
+  });
 
-  function pctRank(value, arr, ascending = true) {
-    if (!arr.length) return 50;
-    const sorted = [...arr].sort((a, b) => ascending ? a - b : b - a);
-    const idx = sorted.findIndex((v) => v >= value);
-    return idx < 0 ? 100 : Math.round((idx / Math.max(sorted.length - 1, 1)) * 100);
-  }
+  const ret = scoreReturns(scheme, peers, weights.returnWindow);
+  const cons = scoreConsistency(scheme, peers);
+  const exp = scoreExpense(scheme, peers);
+  const risk = scoreRiskFit(scheme, peers);
+  const amc = scoreAmc(scheme, scoreOptions.ranking);
 
-  const r3vals = all.map((s) => s.pastReturn3y).filter((v) => v != null);
-  const expVals = all.map((s) => s.expenseRatio).filter((v) => v != null);
-  const volVals = all.map((s) => s.volatilityPct).filter((v) => v != null);
-
-  const r3Pct  = scheme.pastReturn3y  != null ? pctRank(scheme.pastReturn3y,  r3vals,  true)  : 50;
-  const expPct = scheme.expenseRatio  != null ? pctRank(scheme.expenseRatio,  expVals, false) : 50;
-  const volPct = scheme.volatilityPct != null ? pctRank(scheme.volatilityPct, volVals, true)  : 50;
-
-  const gap = scheme.pastReturn1y != null && scheme.pastReturn3y != null
-    ? Math.abs(scheme.pastReturn1y - scheme.pastReturn3y)
-    : 0;
-  const allGaps = all.map((s) =>
-    s.pastReturn1y != null && s.pastReturn3y != null
-      ? Math.abs(s.pastReturn1y - s.pastReturn3y)
-      : 0
+  const { performanceScore, reasons } = aggregateScores(
+    [ret, cons, exp, risk, amc],
+    weights
   );
-  const consistencyPct = pctRank(gap, allGaps, false);
-
-  const performanceScore = Math.round(r3Pct * 0.6 + consistencyPct * 0.2 + expPct * 0.2);
-  const riskScore = volPct;
-
-  const reasons = [];
-  const catMedianR3 = r3vals.length
-    ? r3vals.sort((a, b) => a - b)[Math.floor(r3vals.length / 2)]
-    : 0;
-  const catMedianVol = volVals.length
-    ? volVals.sort((a, b) => a - b)[Math.floor(volVals.length / 2)]
-    : Infinity;
-  const catMedianExp = expVals.length
-    ? expVals.sort((a, b) => a - b)[Math.floor(expVals.length / 2)]
-    : Infinity;
-
-  if (scheme.pastReturn3y != null && scheme.pastReturn3y > catMedianR3) {
-    reasons.push({
-      code: "HIGH_3Y_RETURN_IN_CATEGORY",
-      text: `Past 3Y CAGR (${scheme.pastReturn3y.toFixed(1)}%) is above category median`,
-    });
-  }
-  if (scheme.volatilityPct != null && scheme.volatilityPct < catMedianVol) {
-    reasons.push({
-      code: "LOWER_VOL_THAN_MEDIAN",
-      text: `Historical annualised volatility (${scheme.volatilityPct.toFixed(1)}%) is below category median`,
-    });
-  }
-  if (scheme.aum != null && scheme.aum > 30000) {
-    reasons.push({
-      code: "HIGH_AUM",
-      text: `Large AUM (₹${Math.round(scheme.aum / 100) / 10}k Cr) signals liquidity depth`,
-    });
-  }
-  if (scheme.expenseRatio != null && scheme.expenseRatio < catMedianExp) {
-    reasons.push({
-      code: "LOW_EXPENSE_RATIO",
-      text: `Expense ratio (${scheme.expenseRatio.toFixed(2)}%) is below category median`,
-    });
-  }
+  reasons.push(...collectExtraReasons(scheme));
 
   return {
     ...scheme,
     planType: "Regular",
-    performanceScore: Math.min(100, Math.max(0, performanceScore)),
-    riskScore:        Math.min(100, Math.max(0, riskScore)),
+    performanceScore,
+    riskScore: Math.min(100, Math.max(0, risk.volPercentile ?? 50)),
     reasons,
+    scoreBreakdown: {
+      weights: {
+        returns: +weights.returns.toFixed(4),
+        consistency: +weights.consistency.toFixed(4),
+        expense: +weights.expense.toFixed(4),
+        riskFit: +weights.riskFit.toFixed(4),
+        amc: +weights.amc.toFixed(4),
+      },
+      returnWindow: weights.returnWindow,
+      components: {
+        returns: ret.score,
+        consistency: cons.score,
+        expense: exp.score,
+        riskFit: risk.score,
+        amc: amc.score,
+      },
+    },
   };
 }
 
@@ -170,21 +164,33 @@ export {
   CHAT_DISCLAIMER,
 } from "./fund-chat.js";
 
+function amcMatchesList(schemeAmc, list) {
+  if (!list?.length) return false;
+  const amc = (schemeAmc ?? "").toLowerCase();
+  return list.some((a) => {
+    const needle = String(a).toLowerCase();
+    return amc.includes(needle) || needle.includes(amc.split(/\s+/)[0] ?? "");
+  });
+}
+
 export function rankSchemes(schemes, options = {}) {
   const {
     riskPreference = "MEDIUM",
     categories = [],
     topK = parseInt(process.env.SCREENER_TOP_K || "10", 10),
     minAumCr = 100,
+    ranking = null,
   } = options;
 
   const eligible = mapRiskPreferenceToCategories(riskPreference, categories);
+  const avoidedAmcs = ranking?.avoidedAmcs ?? [];
 
   const pool = schemes.filter((s) => {
     const name = (s.schemeName || s.name || "").toLowerCase();
     if (name.includes("direct")) return false;
     if (!eligible.includes(s.category)) return false;
     if (s.aum != null && s.aum < minAumCr) return false;
+    if (amcMatchesList(s.amc, avoidedAmcs)) return false;
     return true;
   });
 
@@ -195,7 +201,8 @@ export function rankSchemes(schemes, options = {}) {
     (byCat[s.category] ??= []).push(s);
   }
 
-  const scored = pool.map((s) => scoreScheme(s, byCat[s.category] ?? [s]));
+  const scoreOpts = { riskPreference, ranking };
+  const scored = pool.map((s) => scoreScheme(s, byCat[s.category] ?? [s], scoreOpts));
   scored.sort((a, b) => b.performanceScore - a.performanceScore);
 
   return scored.slice(0, topK).map((s) => ({
@@ -215,6 +222,7 @@ export function rankSchemes(schemes, options = {}) {
     performanceScore: s.performanceScore,
     riskScore:        s.riskScore,
     reasons:          s.reasons,
+    scoreBreakdown:   s.scoreBreakdown,
     dataAsOn:         s.dataAsOn ?? new Date().toISOString(),
   }));
 }
@@ -232,10 +240,12 @@ export function buildMultiBucketResponse(buckets, schemes) {
     riskPreference: bk.riskPreference,
     categories: bk.categories ?? [],
     amountInr: bk.amountInr ?? null,
+    ranking: bk.ranking ?? null,
     items: rankSchemes(schemes, {
       riskPreference: bk.riskPreference,
       categories:     bk.categories ?? [],
       topK:           bk.topK ?? undefined,
+      ranking:        bk.ranking ?? null,
     }),
   }));
 

@@ -8,12 +8,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 934.83,
-    "pastReturn1y": 2.308096395035797,
-    "pastReturn3y": 12.655842131577977,
-    "pastReturn5y": 9.171067464916383,
-    "volatilityPct": 14.806750018382559,
-    "dataAsOn": "02-07-2026"
+    "nav": 939.56,
+    "pastReturn1y": 2.6650786192729203,
+    "pastReturn3y": 12.595805912396818,
+    "pastReturn5y": 9.11997243918976,
+    "volatilityPct": 14.777165384472246,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100034",
@@ -24,12 +24,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 136.15,
-    "pastReturn1y": -3.93028506915043,
-    "pastReturn3y": 5.209590053706403,
-    "pastReturn5y": 2.3299427167616793,
-    "volatilityPct": 16.281420811444715,
-    "dataAsOn": "02-07-2026"
+    "nav": 136.84,
+    "pastReturn1y": -3.593067493307023,
+    "pastReturn3y": 5.1536860185711575,
+    "pastReturn5y": 2.28217270631883,
+    "volatilityPct": 16.2530857403191,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100054",
@@ -104,12 +104,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 58.634,
-    "pastReturn1y": -8.624236379503813,
-    "pastReturn3y": 3.9796653458908704,
-    "pastReturn5y": 1.6316537936742703,
-    "volatilityPct": 16.970910888477107,
-    "dataAsOn": "02-07-2026"
+    "nav": 59.087,
+    "pastReturn1y": -8.51847837867128,
+    "pastReturn3y": 3.674135118180888,
+    "pastReturn5y": 1.5909653571351434,
+    "volatilityPct": 16.970879194364468,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100081",
@@ -120,12 +120,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 352.773,
-    "pastReturn1y": -2.1206050785758657,
-    "pastReturn3y": 11.710659569565385,
-    "pastReturn5y": 9.90056487546791,
-    "volatilityPct": 9.580380313077514,
-    "dataAsOn": "02-07-2026"
+    "nav": 354.81,
+    "pastReturn1y": -1.922518762179859,
+    "pastReturn3y": 11.465969826931977,
+    "pastReturn5y": 9.87927812118874,
+    "volatilityPct": 9.574363291327298,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100082",
@@ -136,12 +136,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 27.073,
-    "pastReturn1y": -10.490643390861598,
-    "pastReturn3y": 2.5013208365350703,
-    "pastReturn5y": 0.569571977578498,
-    "volatilityPct": 10.25701872110489,
-    "dataAsOn": "02-07-2026"
+    "nav": 27.229,
+    "pastReturn1y": -10.309957508481837,
+    "pastReturn3y": 2.276442543564605,
+    "pastReturn5y": 0.5503042654539048,
+    "volatilityPct": 10.250731044020917,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100087",
@@ -152,12 +152,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 56.0935,
-    "pastReturn1y": 6.266469896202942,
-    "pastReturn3y": 7.061064117263172,
-    "pastReturn5y": 6.124159636227766,
-    "volatilityPct": 0.48079221061823313,
-    "dataAsOn": "02-07-2026"
+    "nav": 56.1101,
+    "pastReturn1y": 6.251017818932381,
+    "pastReturn3y": 7.023414605517875,
+    "pastReturn5y": 6.124023222510666,
+    "volatilityPct": 0.4815732691788389,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100088",
@@ -168,12 +168,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 12.4854,
-    "pastReturn1y": 0.32462836480513513,
-    "pastReturn3y": 0.45884314094770673,
-    "pastReturn5y": 0.5370010979063755,
-    "volatilityPct": 4.02828092916489,
-    "dataAsOn": "02-07-2026"
+    "nav": 12.4891,
+    "pastReturn1y": 0.3100277097305426,
+    "pastReturn3y": 0.42339285134511684,
+    "pastReturn5y": 0.5368394262469378,
+    "volatilityPct": 4.028331675999272,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100089",
@@ -184,12 +184,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 11.0248,
-    "pastReturn1y": 0.538036440569778,
-    "pastReturn3y": 0.5984868580897196,
-    "pastReturn5y": 0.47472235697574305,
-    "volatilityPct": 1.851712176345021,
-    "dataAsOn": "02-07-2026"
+    "nav": 11.0281,
+    "pastReturn1y": 0.5241281242593931,
+    "pastReturn3y": 0.5633499768397998,
+    "pastReturn5y": 0.4747648494617618,
+    "volatilityPct": 1.8518355137710323,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100090",
@@ -216,12 +216,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 56.0117,
-    "pastReturn1y": 8.715618588816664,
-    "pastReturn3y": 16.832043047321932,
-    "pastReturn5y": 15.55181845078597,
-    "volatilityPct": 15.72611755178831,
-    "dataAsOn": "02-07-2026"
+    "nav": 56.2364,
+    "pastReturn1y": 9.190320582644528,
+    "pastReturn3y": 16.125604709972528,
+    "pastReturn5y": 15.311349149141273,
+    "volatilityPct": 15.683289339758408,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100175",
@@ -232,12 +232,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 403.3641,
-    "pastReturn1y": 8.715946092144033,
-    "pastReturn3y": 16.83758603588894,
-    "pastReturn5y": 15.508395182066014,
-    "volatilityPct": 15.726061160522498,
-    "dataAsOn": "02-07-2026"
+    "nav": 404.9822,
+    "pastReturn1y": 9.190437301308464,
+    "pastReturn3y": 16.131197643644036,
+    "pastReturn5y": 15.268093028506868,
+    "volatilityPct": 15.683229935372664,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100176",
@@ -248,12 +248,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 226.5127,
-    "pastReturn1y": 9.14549410984673,
-    "pastReturn3y": 21.03431304948149,
-    "pastReturn5y": 19.444430096429734,
-    "volatilityPct": 15.331220970074005,
-    "dataAsOn": "02-07-2026"
+    "nav": 229.3696,
+    "pastReturn1y": 9.879126522415627,
+    "pastReturn3y": 20.70480532965164,
+    "pastReturn5y": 19.316254778863097,
+    "volatilityPct": 15.274021002240016,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100177",
@@ -264,12 +264,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 284.8307,
-    "pastReturn1y": 9.145590962738147,
-    "pastReturn3y": 21.0316764176693,
-    "pastReturn5y": 19.414120315378035,
-    "volatilityPct": 15.33127885520799,
-    "dataAsOn": "02-07-2026"
+    "nav": 288.4233,
+    "pastReturn1y": 9.879310147776499,
+    "pastReturn3y": 20.702214483709945,
+    "pastReturn5y": 19.285005419645017,
+    "volatilityPct": 15.274077431084548,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100190",
@@ -328,12 +328,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 29.4822,
-    "pastReturn1y": -2.2586901387438463,
-    "pastReturn3y": 11.47418878889983,
-    "pastReturn5y": 11.465697754780058,
-    "volatilityPct": 13.907823795106413,
-    "dataAsOn": "02-07-2026"
+    "nav": 29.795,
+    "pastReturn1y": -1.2769877138805175,
+    "pastReturn3y": 11.191634536080585,
+    "pastReturn5y": 11.570775623876074,
+    "volatilityPct": 13.895490085451042,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100219",
@@ -344,12 +344,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 151.8733,
-    "pastReturn1y": -2.25855259304929,
-    "pastReturn3y": 11.475183308138636,
-    "pastReturn5y": 11.466303665359856,
-    "volatilityPct": 13.907840536240396,
-    "dataAsOn": "02-07-2026"
+    "nav": 153.4845,
+    "pastReturn1y": -1.277222258670796,
+    "pastReturn3y": 11.192460679080241,
+    "pastReturn5y": 11.571281244729148,
+    "volatilityPct": 13.89549685177488,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100220",
@@ -360,12 +360,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 32.7333,
-    "pastReturn1y": -4.755350970099759,
-    "pastReturn3y": 14.024511029008412,
-    "pastReturn5y": 13.142659184990801,
-    "volatilityPct": 12.282723810532731,
-    "dataAsOn": "02-07-2026"
+    "nav": 32.8712,
+    "pastReturn1y": -4.489164986256478,
+    "pastReturn3y": 13.699171565858826,
+    "pastReturn5y": 13.121197844389343,
+    "volatilityPct": 12.24032968093884,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100221",
@@ -376,12 +376,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 117.0339,
-    "pastReturn1y": -4.755398072221695,
-    "pastReturn3y": 14.025530398526609,
-    "pastReturn5y": 13.14321746240057,
-    "volatilityPct": 12.282830857243576,
-    "dataAsOn": "02-07-2026"
+    "nav": 117.5269,
+    "pastReturn1y": -4.489199185052694,
+    "pastReturn3y": 13.700184287349382,
+    "pastReturn5y": 13.12173545034363,
+    "volatilityPct": 12.24042821499358,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100233",
@@ -392,12 +392,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 11.0098,
-    "pastReturn1y": 0.03452662184262323,
-    "pastReturn3y": -0.013015315844067121,
-    "pastReturn5y": 0.0059957376187469436,
-    "volatilityPct": 0.7063505574863503,
-    "dataAsOn": "02-07-2026"
+    "nav": 11.0145,
+    "pastReturn1y": 0.011804016997785105,
+    "pastReturn3y": 0.02149606627659395,
+    "pastReturn5y": 0.01998564826832805,
+    "volatilityPct": 0.7011155571302919,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100244",
@@ -408,12 +408,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 42.837,
-    "pastReturn1y": 6.169357437084555,
-    "pastReturn3y": 6.824478793437971,
-    "pastReturn5y": 6.081848134420831,
-    "volatilityPct": 0.16289952152792875,
-    "dataAsOn": "02-07-2026"
+    "nav": 42.8554,
+    "pastReturn1y": 6.145508765498753,
+    "pastReturn3y": 6.810296257309312,
+    "pastReturn5y": 6.083907719913251,
+    "volatilityPct": 0.1643821466805493,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100247",
@@ -424,12 +424,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 43.5152,
-    "pastReturn1y": 6.185655058650141,
-    "pastReturn3y": 6.832107506109919,
-    "pastReturn5y": 6.079711957264089,
-    "volatilityPct": 0.16301436104113098,
-    "dataAsOn": "02-07-2026"
+    "nav": 43.534,
+    "pastReturn1y": 6.1621036357118575,
+    "pastReturn3y": 6.8180670636862395,
+    "pastReturn5y": 6.081869583594912,
+    "volatilityPct": 0.16448953656577883,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100286",
@@ -440,12 +440,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 38.205,
-    "pastReturn1y": 3.6573785169709883,
-    "pastReturn3y": 13.48638052899409,
-    "pastReturn5y": 12.188533097104592,
-    "volatilityPct": 12.228867820608812,
-    "dataAsOn": "02-07-2026"
+    "nav": 38.393,
+    "pastReturn1y": 4.037612118255973,
+    "pastReturn3y": 13.307828214480732,
+    "pastReturn5y": 12.22365463838182,
+    "volatilityPct": 12.210811590885159,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100312",
@@ -456,12 +456,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 32.7777,
-    "pastReturn1y": 7.193032945039279,
-    "pastReturn3y": 12.614138400937502,
-    "pastReturn5y": 10.037301519197438,
-    "volatilityPct": 14.791124517512277,
-    "dataAsOn": "02-07-2026"
+    "nav": 32.9788,
+    "pastReturn1y": 7.104975138920011,
+    "pastReturn3y": 12.301345283233701,
+    "pastReturn5y": 10.074863989183669,
+    "volatilityPct": 14.726353686923007,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100313",
@@ -472,12 +472,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 103.871,
-    "pastReturn1y": 7.193240090112862,
-    "pastReturn3y": 12.614257051361587,
-    "pastReturn5y": 10.842599410290399,
-    "volatilityPct": 14.791181684377714,
-    "dataAsOn": "02-07-2026"
+    "nav": 104.5082,
+    "pastReturn1y": 7.104959749117357,
+    "pastReturn3y": 12.301475635543667,
+    "pastReturn5y": 10.880343622179023,
+    "volatilityPct": 14.726413432913365,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100321",
@@ -488,12 +488,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 14.9965,
-    "pastReturn1y": -8.817019931171188,
-    "pastReturn3y": 2.1656747822324185,
-    "pastReturn5y": 0.3465881271196958,
-    "volatilityPct": 11.377439960226939,
-    "dataAsOn": "02-07-2026"
+    "nav": 15.0713,
+    "pastReturn1y": -8.218794341357649,
+    "pastReturn3y": 1.8718177994766494,
+    "pastReturn5y": 0.36884586991670076,
+    "volatilityPct": 11.380423704624906,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100323",
@@ -504,12 +504,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 198.1566,
-    "pastReturn1y": -0.5436165583465602,
-    "pastReturn3y": 10.709465620759984,
-    "pastReturn5y": 8.758757113818682,
-    "volatilityPct": 11.145559972037224,
-    "dataAsOn": "02-07-2026"
+    "nav": 199.1451,
+    "pastReturn1y": 0.10883301848001459,
+    "pastReturn3y": 10.390984228726907,
+    "pastReturn5y": 8.78285868383335,
+    "volatilityPct": 11.13128782585588,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100325",
@@ -520,12 +520,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 36.4955,
-    "pastReturn1y": -3.407361531274722,
-    "pastReturn3y": 8.487626662349413,
-    "pastReturn5y": 8.420393847815099,
-    "volatilityPct": 10.637764144575927,
-    "dataAsOn": "02-07-2026"
+    "nav": 36.7258,
+    "pastReturn1y": -2.402610689903506,
+    "pastReturn3y": 8.404855618674766,
+    "pastReturn5y": 8.434130064762302,
+    "volatilityPct": 10.633182968835419,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100332",
@@ -536,12 +536,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 32.2815,
-    "pastReturn1y": -5.956948462257805,
-    "pastReturn3y": 8.138159034916637,
-    "pastReturn5y": 7.836409396862587,
-    "volatilityPct": 13.530575059071523,
-    "dataAsOn": "02-07-2026"
+    "nav": 32.5904,
+    "pastReturn1y": -5.22823169508233,
+    "pastReturn3y": 7.969557546819672,
+    "pastReturn5y": 7.894337392805251,
+    "volatilityPct": 13.541029716386483,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100414",
@@ -552,12 +552,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 440.5904,
-    "pastReturn1y": 0.47990118728962194,
-    "pastReturn3y": 8.993873700843103,
-    "pastReturn5y": 9.657678870576426,
-    "volatilityPct": 10.448264014763387,
-    "dataAsOn": "02-07-2026"
+    "nav": 440.9109,
+    "pastReturn1y": 0.35068385399918967,
+    "pastReturn3y": 8.5550208506757,
+    "pastReturn5y": 9.590151303906191,
+    "volatilityPct": 10.427481368105127,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100474",
@@ -568,12 +568,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 95.0669,
-    "pastReturn1y": -5.071695324825754,
-    "pastReturn3y": 7.725662920251364,
-    "pastReturn5y": 6.87938864265365,
-    "volatilityPct": 17.940689926560957,
-    "dataAsOn": "02-07-2026"
+    "nav": 95.5662,
+    "pastReturn1y": -4.95483758038433,
+    "pastReturn3y": 7.541219754945905,
+    "pastReturn5y": 6.939230311165634,
+    "volatilityPct": 17.924466367374965,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100475",
@@ -584,12 +584,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 508.4092,
-    "pastReturn1y": 0.34829148480017835,
-    "pastReturn3y": 11.498710204726038,
-    "pastReturn5y": 11.18143581230726,
-    "volatilityPct": 13.514373641819583,
-    "dataAsOn": "02-07-2026"
+    "nav": 511.9797,
+    "pastReturn1y": 0.9709570769642184,
+    "pastReturn3y": 11.301245454062169,
+    "pastReturn5y": 11.21215492043719,
+    "volatilityPct": 13.493834895900509,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100476",
@@ -600,12 +600,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 226.49,
-    "pastReturn1y": -0.46145732618440016,
-    "pastReturn3y": 12.713249967006558,
-    "pastReturn5y": 10.593376276822042,
-    "volatilityPct": 13.883862305424207,
-    "dataAsOn": "02-07-2026"
+    "nav": 227.65,
+    "pastReturn1y": -0.32400718069967027,
+    "pastReturn3y": 12.356328527204807,
+    "pastReturn5y": 10.632181089691596,
+    "volatilityPct": 13.861559670704176,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100477",
@@ -616,12 +616,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 119.02,
-    "pastReturn1y": -4.814459373000646,
-    "pastReturn3y": 10.977220101286722,
-    "pastReturn5y": 11.407568593305495,
-    "volatilityPct": 16.195126246731594,
-    "dataAsOn": "02-07-2026"
+    "nav": 119.57,
+    "pastReturn1y": -4.458649620455468,
+    "pastReturn3y": 10.71309949541872,
+    "pastReturn5y": 11.487845800794982,
+    "volatilityPct": 16.13221281548465,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100480",
@@ -632,12 +632,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 178.16,
-    "pastReturn1y": -5.914659907055353,
-    "pastReturn3y": 11.167814409997924,
-    "pastReturn5y": 11.073485924747551,
-    "volatilityPct": 12.792382399524596,
-    "dataAsOn": "02-07-2026"
+    "nav": 179.43,
+    "pastReturn1y": -5.478586103355632,
+    "pastReturn3y": 10.957073414504892,
+    "pastReturn5y": 11.100966848069449,
+    "volatilityPct": 12.769658989754637,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100537",
@@ -648,12 +648,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 1245.9522,
-    "pastReturn1y": 0.0626981905705426,
-    "pastReturn3y": 0.04432936143108357,
-    "pastReturn5y": 0.0189280019561755,
-    "volatilityPct": 0.6060724922710836,
-    "dataAsOn": "02-07-2026"
+    "nav": 1244.2819,
+    "pastReturn1y": -0.001189426926884174,
+    "pastReturn3y": -0.027484013199596813,
+    "pastReturn5y": -0.002579601606866877,
+    "volatilityPct": 0.6208741125847058,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100538",
@@ -664,12 +664,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 6249.0814,
-    "pastReturn1y": 5.652090018465783,
-    "pastReturn3y": 6.257760580510396,
-    "pastReturn5y": 5.466929436832246,
-    "volatilityPct": 0.18652773771971276,
-    "dataAsOn": "02-07-2026"
+    "nav": 6251.8081,
+    "pastReturn1y": 5.632413060689712,
+    "pastReturn3y": 6.244423976069746,
+    "pastReturn5y": 5.470692258717902,
+    "volatilityPct": 0.18749599324921964,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100541",
@@ -680,12 +680,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 1509.0075,
-    "pastReturn1y": -0.015020862898562637,
-    "pastReturn3y": -0.006910872494148013,
-    "pastReturn5y": -0.019635778774718116,
-    "volatilityPct": 0.02916995616956006,
-    "dataAsOn": "02-07-2026"
+    "nav": 1508.9895,
+    "pastReturn1y": -0.0162135207378844,
+    "pastReturn3y": -0.007308458934440765,
+    "pastReturn5y": -0.01987430047096783,
+    "volatilityPct": 0.02919196750151567,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100593",
@@ -696,12 +696,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 47.8,
-    "pastReturn1y": -4.342605563338009,
-    "pastReturn3y": 6.807855701664978,
-    "pastReturn5y": 6.621483126141681,
-    "volatilityPct": 14.18271699962618,
-    "dataAsOn": "02-07-2026"
+    "nav": 48.12,
+    "pastReturn1y": -3.644373247897481,
+    "pastReturn3y": 6.594717889412172,
+    "pastReturn5y": 6.61063830858446,
+    "volatilityPct": 14.16857121162437,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100600",
@@ -712,12 +712,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 12.3817,
-    "pastReturn1y": -7.0031019745983585,
-    "pastReturn3y": -2.33946686405363,
-    "pastReturn5y": -2.6731991213770345,
-    "volatilityPct": 4.7516191903799205,
-    "dataAsOn": "02-07-2026"
+    "nav": 12.4105,
+    "pastReturn1y": -6.797990342227589,
+    "pastReturn3y": -2.123461763314094,
+    "pastReturn5y": -2.6724067802826323,
+    "volatilityPct": 4.750990185561946,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100601",
@@ -728,12 +728,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 99.281,
-    "pastReturn1y": 2.207086684696158,
-    "pastReturn3y": 7.277136339103363,
-    "pastReturn5y": 6.497090016970941,
-    "volatilityPct": 3.5764800486263315,
-    "dataAsOn": "02-07-2026"
+    "nav": 99.5115,
+    "pastReturn1y": 2.4324641476339393,
+    "pastReturn3y": 7.244239147049414,
+    "pastReturn5y": 6.497958100790524,
+    "volatilityPct": 3.569864965791463,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100617",
@@ -760,12 +760,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 75.7634,
-    "pastReturn1y": 3.8957797661901328,
-    "pastReturn3y": 12.531771679516002,
-    "pastReturn5y": 12.856902590073416,
-    "volatilityPct": 14.97157883756385,
-    "dataAsOn": "02-07-2026"
+    "nav": 76.1548,
+    "pastReturn1y": 4.181640836081901,
+    "pastReturn3y": 12.080064614915575,
+    "pastReturn5y": 12.729269424327661,
+    "volatilityPct": 14.928222594313375,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100631",
@@ -776,12 +776,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 662.4834,
-    "pastReturn1y": 3.8966859969007395,
-    "pastReturn3y": 12.531398873329369,
-    "pastReturn5y": 12.883732821939663,
-    "volatilityPct": 14.971534412444104,
-    "dataAsOn": "02-07-2026"
+    "nav": 665.9057,
+    "pastReturn1y": 4.182502902581997,
+    "pastReturn3y": 12.079700240371793,
+    "pastReturn5y": 12.756201966204351,
+    "volatilityPct": 14.928167901139409,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100641",
@@ -792,12 +792,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 6358.9638,
-    "pastReturn1y": 6.232262502467467,
-    "pastReturn3y": 7.032356072081103,
-    "pastReturn5y": 6.152752521157834,
-    "volatilityPct": 0.40038402531216183,
-    "dataAsOn": "02-07-2026"
+    "nav": 6361.4528,
+    "pastReturn1y": 6.236264458401108,
+    "pastReturn3y": 7.0013552759411235,
+    "pastReturn5y": 6.153676442417888,
+    "volatilityPct": 0.40032198640049715,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100643",
@@ -808,12 +808,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 109.6386,
-    "pastReturn1y": -17.567379603154485,
-    "pastReturn3y": 7.278396615906235,
-    "pastReturn5y": 7.383522193927261,
-    "volatilityPct": 14.949738908677284,
-    "dataAsOn": "02-07-2026"
+    "nav": 110.4433,
+    "pastReturn1y": -17.359333985818914,
+    "pastReturn3y": 7.274429079487432,
+    "pastReturn5y": 7.5450894441477345,
+    "volatilityPct": 14.97022754810439,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100650",
@@ -824,12 +824,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 51.7546,
-    "pastReturn1y": -7.776552200959741,
-    "pastReturn3y": 5.486299541934936,
-    "pastReturn5y": 4.876708842098476,
-    "volatilityPct": 13.003384583699596,
-    "dataAsOn": "02-07-2026"
+    "nav": 52.2286,
+    "pastReturn1y": -6.949655617198824,
+    "pastReturn3y": 5.488608843119058,
+    "pastReturn5y": 4.95570565394392,
+    "volatilityPct": 12.996406734714034,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100651",
@@ -840,12 +840,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 262.6421,
-    "pastReturn1y": -5.244179007121053,
-    "pastReturn3y": 8.292358552418278,
-    "pastReturn5y": 8.419071652045918,
-    "volatilityPct": 12.806110299029152,
-    "dataAsOn": "02-07-2026"
+    "nav": 265.0479,
+    "pastReturn1y": -4.3943938347331795,
+    "pastReturn3y": 8.294810468680701,
+    "pastReturn5y": 8.500774712471259,
+    "volatilityPct": 12.799078706159595,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100663",
@@ -856,12 +856,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 90.0904,
-    "pastReturn1y": 1.4682362693553497,
-    "pastReturn3y": 17.575392069870112,
-    "pastReturn5y": 15.380475523607263,
-    "volatilityPct": 13.192098613817796,
-    "dataAsOn": "02-07-2026"
+    "nav": 90.7181,
+    "pastReturn1y": 1.6444744225236008,
+    "pastReturn3y": 17.17431251840058,
+    "pastReturn5y": 15.466579411860227,
+    "volatilityPct": 13.163584627654554,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100664",
@@ -872,12 +872,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 184.9312,
-    "pastReturn1y": 1.468215190449862,
-    "pastReturn3y": 17.575246484448126,
-    "pastReturn5y": 15.380348834830016,
-    "volatilityPct": 13.192069585171176,
-    "dataAsOn": "02-07-2026"
+    "nav": 186.2196,
+    "pastReturn1y": 1.6444804450489903,
+    "pastReturn3y": 17.174145481243585,
+    "pastReturn5y": 15.466409557978489,
+    "volatilityPct": 13.16355864757167,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100668",
@@ -888,12 +888,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 206.3867,
-    "pastReturn1y": -5.151253058425809,
-    "pastReturn3y": 7.674379550979027,
-    "pastReturn5y": 4.867327690758949,
-    "volatilityPct": 13.62094839119982,
-    "dataAsOn": "02-07-2026"
+    "nav": 208.749,
+    "pastReturn1y": -3.9983333570943302,
+    "pastReturn3y": 7.897651814738849,
+    "pastReturn5y": 4.904620994304709,
+    "volatilityPct": 13.617891022335499,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100678",
@@ -904,12 +904,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 40.558,
-    "pastReturn1y": -0.4420922919822101,
-    "pastReturn3y": 7.517996209296296,
-    "pastReturn5y": 7.591653219376515,
-    "volatilityPct": 5.643674154301672,
-    "dataAsOn": "02-07-2026"
+    "nav": 40.7462,
+    "pastReturn1y": -0.11594984495079119,
+    "pastReturn3y": 7.618123878667871,
+    "pastReturn5y": 7.645133791458525,
+    "volatilityPct": 5.640399832692258,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100684",
@@ -920,12 +920,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 406.9399,
-    "pastReturn1y": -0.42378749891722745,
-    "pastReturn3y": 12.48709191365911,
-    "pastReturn5y": 12.368310394338922,
-    "volatilityPct": 9.51188728033165,
-    "dataAsOn": "02-07-2026"
+    "nav": 409.761,
+    "pastReturn1y": -0.2235322478139734,
+    "pastReturn3y": 12.303725238990527,
+    "pastReturn5y": 12.453930698655302,
+    "volatilityPct": 9.498245075643322,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100685",
@@ -936,12 +936,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 39.8972,
-    "pastReturn1y": -8.591825840315447,
-    "pastReturn3y": 4.296627890328697,
-    "pastReturn5y": 4.575005578762603,
-    "volatilityPct": 10.771400035476654,
-    "dataAsOn": "02-07-2026"
+    "nav": 40.1738,
+    "pastReturn1y": -8.407810020610285,
+    "pastReturn3y": 4.1265538693523895,
+    "pastReturn5y": 4.654729230756005,
+    "volatilityPct": 10.758436082629364,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100723",
@@ -952,12 +952,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 7605.3672,
-    "pastReturn1y": 6.340885432141907,
-    "pastReturn3y": 7.15152693261214,
-    "pastReturn5y": 6.195463896184683,
-    "volatilityPct": 0.4615071098027936,
-    "dataAsOn": "02-07-2026"
+    "nav": 7607.4393,
+    "pastReturn1y": 6.329288282881573,
+    "pastReturn3y": 7.114358691888523,
+    "pastReturn5y": 6.194720306012558,
+    "volatilityPct": 0.46285756749223933,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100724",
@@ -968,12 +968,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 4103.7392,
-    "pastReturn1y": 6.341000668145869,
-    "pastReturn3y": 7.150841053324597,
-    "pastReturn5y": 6.195076611604788,
-    "volatilityPct": 0.46150426282298923,
-    "dataAsOn": "02-07-2026"
+    "nav": 4104.8573,
+    "pastReturn1y": 6.329404664150573,
+    "pastReturn3y": 7.113672789179537,
+    "pastReturn5y": 6.194334237391996,
+    "volatilityPct": 0.4628550018044888,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100725",
@@ -984,12 +984,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 2637.2728,
-    "pastReturn1y": 1.965389327535716,
-    "pastReturn3y": 5.661269498981181,
-    "pastReturn5y": 5.3068079050749395,
-    "volatilityPct": 1.5122836939329953,
-    "dataAsOn": "02-07-2026"
+    "nav": 2637.9914,
+    "pastReturn1y": 1.9542703074688639,
+    "pastReturn3y": 5.624618474112042,
+    "pastReturn5y": 5.306069558629001,
+    "volatilityPct": 1.512500564361204,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100782",
@@ -1032,12 +1032,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 45.5403,
-    "pastReturn1y": 5.260688373555111,
-    "pastReturn3y": 7.193304182515936,
-    "pastReturn5y": 5.898536441602165,
-    "volatilityPct": 1.1551504872819427,
-    "dataAsOn": "02-07-2026"
+    "nav": 45.5699,
+    "pastReturn1y": 5.24955539644778,
+    "pastReturn3y": 7.203767324442123,
+    "pastReturn5y": 5.905671880266761,
+    "volatilityPct": 1.1507112200822502,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100793",
@@ -1048,12 +1048,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 11.5408,
-    "pastReturn1y": -1.8989816562112183,
-    "pastReturn3y": -0.08362075848131756,
-    "pastReturn5y": -0.06278880428253197,
-    "volatilityPct": 7.067875381955551,
-    "dataAsOn": "02-07-2026"
+    "nav": 11.5483,
+    "pastReturn1y": -1.908604433874117,
+    "pastReturn3y": -0.07378353559777118,
+    "pastReturn5y": -0.05601789172294813,
+    "volatilityPct": 7.04738268046137,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100794",
@@ -1064,12 +1064,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 36.9276,
-    "pastReturn1y": 3.6136667817069146,
-    "pastReturn3y": 10.649158792269308,
-    "pastReturn5y": 10.588205427610099,
-    "volatilityPct": 18.59925565447884,
-    "dataAsOn": "02-07-2026"
+    "nav": 36.8463,
+    "pastReturn1y": 2.386953175147899,
+    "pastReturn3y": 10.15030547288671,
+    "pastReturn5y": 10.553733145435395,
+    "volatilityPct": 18.55584533981694,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100795",
@@ -1080,12 +1080,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 288.8591,
-    "pastReturn1y": 10.903397487753397,
-    "pastReturn3y": 18.931017843594322,
-    "pastReturn5y": 17.153263457558165,
-    "volatilityPct": 16.632440560850714,
-    "dataAsOn": "02-07-2026"
+    "nav": 288.2237,
+    "pastReturn1y": 9.590718786798957,
+    "pastReturn3y": 18.394958902663006,
+    "pastReturn5y": 17.116821121205405,
+    "volatilityPct": 16.58692619008639,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100820",
@@ -1096,12 +1096,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 38.4779,
-    "pastReturn1y": -3.914067318761505,
-    "pastReturn3y": 9.743115868827568,
-    "pastReturn5y": 7.190810754480803,
-    "volatilityPct": 12.99444818679238,
-    "dataAsOn": "02-07-2026"
+    "nav": 38.8307,
+    "pastReturn1y": -3.3338395166530144,
+    "pastReturn3y": 9.871701239925201,
+    "pastReturn5y": 7.238696780197418,
+    "volatilityPct": 12.974337997178727,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100821",
@@ -1112,12 +1112,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 201.4118,
-    "pastReturn1y": -3.9141021408630183,
-    "pastReturn3y": 9.743115993476103,
-    "pastReturn5y": 9.12532369064618,
-    "volatilityPct": 12.99445231787309,
-    "dataAsOn": "02-07-2026"
+    "nav": 203.2586,
+    "pastReturn1y": -3.3337851366229354,
+    "pastReturn3y": 9.871698533636097,
+    "pastReturn5y": 9.174077516705047,
+    "volatilityPct": 12.974338677646946,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100822",
@@ -1128,12 +1128,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 167.231,
-    "pastReturn1y": -4.227854219664707,
-    "pastReturn3y": 8.911771086688036,
-    "pastReturn5y": 9.896180406502065,
-    "volatilityPct": 12.932030662727806,
-    "dataAsOn": "02-07-2026"
+    "nav": 169.0433,
+    "pastReturn1y": -3.2416062129307144,
+    "pastReturn3y": 8.727514451565167,
+    "pastReturn5y": 9.998300128240256,
+    "volatilityPct": 12.927794764087466,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100823",
@@ -1144,12 +1144,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 84.2508,
-    "pastReturn1y": -4.227804933500057,
-    "pastReturn3y": 8.91177740600888,
-    "pastReturn5y": 9.896133629256854,
-    "volatilityPct": 12.931911170221216,
-    "dataAsOn": "02-07-2026"
+    "nav": 85.1638,
+    "pastReturn1y": -3.2415365685453668,
+    "pastReturn3y": 8.727539081074042,
+    "pastReturn5y": 9.99821919078354,
+    "volatilityPct": 12.927675160518623,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100828",
@@ -1192,12 +1192,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 1270.4437,
-    "pastReturn1y": 3.8954293798709516,
-    "pastReturn3y": 1.2819717165266642,
-    "pastReturn5y": 0.7672225965766222,
-    "volatilityPct": 0.23446785501648007,
-    "dataAsOn": "02-07-2026"
+    "nav": 1270.9665,
+    "pastReturn1y": 3.938183364545611,
+    "pastReturn3y": 1.2958626517163285,
+    "pastReturn5y": 0.7755145711990652,
+    "volatilityPct": 0.2344372142218663,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100834",
@@ -1224,12 +1224,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 5611.2763,
-    "pastReturn1y": 6.263230053374991,
-    "pastReturn3y": 6.883308664662402,
-    "pastReturn5y": 6.096467479517664,
-    "volatilityPct": 0.20077263260820086,
-    "dataAsOn": "02-07-2026"
+    "nav": 5613.5854,
+    "pastReturn1y": 6.235291267813325,
+    "pastReturn3y": 6.866265759953039,
+    "pastReturn5y": 6.0984034667967535,
+    "volatilityPct": 0.202729211710233,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100864",
@@ -1240,12 +1240,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 30.8631,
-    "pastReturn1y": -4.52605007702731,
-    "pastReturn3y": 9.083637560817316,
-    "pastReturn5y": 8.03933266075807,
-    "volatilityPct": 13.889823173911584,
-    "dataAsOn": "02-07-2026"
+    "nav": 31.1203,
+    "pastReturn1y": -3.6567961240190017,
+    "pastReturn3y": 9.079162585969037,
+    "pastReturn5y": 8.096687612288434,
+    "volatilityPct": 13.893880255556706,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100865",
@@ -1256,12 +1256,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 147.4282,
-    "pastReturn1y": -4.526235692198089,
-    "pastReturn3y": 10.173605922621176,
-    "pastReturn5y": 10.313727040169795,
-    "volatilityPct": 13.89001846513221,
-    "dataAsOn": "02-07-2026"
+    "nav": 148.6572,
+    "pastReturn1y": -3.6565322438483316,
+    "pastReturn3y": 10.169214899432856,
+    "pastReturn5y": 10.37232886868411,
+    "volatilityPct": 13.894094077243318,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100915",
@@ -1272,12 +1272,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 65.0618,
-    "pastReturn1y": -3.6259974492554248,
-    "pastReturn3y": 13.632258886035187,
-    "pastReturn5y": 16.532700472298288,
-    "volatilityPct": 11.712344949937492,
-    "dataAsOn": "02-07-2026"
+    "nav": 65.4317,
+    "pastReturn1y": -3.253913804626185,
+    "pastReturn3y": 13.104978180781535,
+    "pastReturn5y": 16.607804600377186,
+    "volatilityPct": 11.717816092285691,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100927",
@@ -1288,12 +1288,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 21.519,
-    "pastReturn1y": -3.2218894195741976,
-    "pastReturn3y": 5.81713359829521,
-    "pastReturn5y": 6.976930498411837,
-    "volatilityPct": 4.79028484363899,
-    "dataAsOn": "02-07-2026"
+    "nav": 21.5351,
+    "pastReturn1y": -3.257817729320811,
+    "pastReturn3y": 5.739790184374183,
+    "pastReturn5y": 6.94812850707045,
+    "volatilityPct": 4.7836560493609275,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100928",
@@ -1304,12 +1304,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 22.1017,
-    "pastReturn1y": 5.153555201370219,
-    "pastReturn3y": 9.030391544122129,
-    "pastReturn5y": 8.913683625875745,
-    "volatilityPct": 3.725597563014329,
-    "dataAsOn": "02-07-2026"
+    "nav": 22.1183,
+    "pastReturn1y": 5.115008079079941,
+    "pastReturn3y": 8.950873140198556,
+    "pastReturn5y": 8.884324028479917,
+    "volatilityPct": 3.7194354115883637,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100929",
@@ -1320,12 +1320,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 27.031,
-    "pastReturn1y": 5.153620527343605,
-    "pastReturn3y": 9.030290380582873,
-    "pastReturn5y": 8.914081227064186,
-    "volatilityPct": 3.7256942702027054,
-    "dataAsOn": "02-07-2026"
+    "nav": 27.0513,
+    "pastReturn1y": 5.1148241694190855,
+    "pastReturn3y": 8.950762377377863,
+    "pastReturn5y": 8.884790019630472,
+    "volatilityPct": 3.7195301691672933,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100940",
@@ -1384,12 +1384,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 76.6323,
-    "pastReturn1y": 5.1539389348800535,
-    "pastReturn3y": 9.030162002469243,
-    "pastReturn5y": 8.91351394741493,
-    "volatilityPct": 3.725849170873467,
-    "dataAsOn": "02-07-2026"
+    "nav": 76.6897,
+    "pastReturn1y": 5.115004680781676,
+    "pastReturn3y": 8.950604851616738,
+    "pastReturn5y": 8.884178947533261,
+    "volatilityPct": 3.7196865819498695,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "100975",
@@ -1416,12 +1416,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 221.9752,
-    "pastReturn1y": -0.0850272388743245,
-    "pastReturn3y": 15.74815481355718,
-    "pastReturn5y": 15.931780056754285,
-    "volatilityPct": 13.783064228789026,
-    "dataAsOn": "02-07-2026"
+    "nav": 221.4525,
+    "pastReturn1y": -0.7638564939228987,
+    "pastReturn3y": 14.7896387177884,
+    "pastReturn5y": 15.582753855925358,
+    "volatilityPct": 13.774051848640159,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101066",
@@ -1432,12 +1432,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 78.9129,
-    "pastReturn1y": -0.08495821727020347,
-    "pastReturn3y": 15.755187396290093,
-    "pastReturn5y": 16.02877097274167,
-    "volatilityPct": 13.783053404512197,
-    "dataAsOn": "02-07-2026"
+    "nav": 78.7271,
+    "pastReturn1y": -0.763867792888473,
+    "pastReturn3y": 14.796663808576405,
+    "pastReturn5y": 15.67842346503394,
+    "volatilityPct": 13.774039580451628,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101069",
@@ -1448,12 +1448,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 65.042,
-    "pastReturn1y": 9.821494904196193,
-    "pastReturn3y": 14.661986152996121,
-    "pastReturn5y": 13.76854638826388,
-    "volatilityPct": 12.583146902497447,
-    "dataAsOn": "02-07-2026"
+    "nav": 65.2048,
+    "pastReturn1y": 10.49432402617101,
+    "pastReturn3y": 14.315924034118698,
+    "pastReturn5y": 13.65106754431289,
+    "volatilityPct": 12.572419710435351,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101070",
@@ -1464,12 +1464,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 471.5673,
-    "pastReturn1y": 9.822020562548506,
-    "pastReturn3y": 14.664108054539993,
-    "pastReturn5y": 13.763973167436871,
-    "volatilityPct": 12.583215622439317,
-    "dataAsOn": "02-07-2026"
+    "nav": 472.7472,
+    "pastReturn1y": 10.494684887860384,
+    "pastReturn3y": 14.316896446937832,
+    "pastReturn5y": 13.646449506924974,
+    "volatilityPct": 12.57249398461486,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101078",
@@ -1480,12 +1480,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 10.4302,
-    "pastReturn1y": 0,
-    "pastReturn3y": 0,
-    "pastReturn5y": 0,
-    "volatilityPct": 0.004083947290878269,
-    "dataAsOn": "02-07-2026"
+    "nav": 10.4297,
+    "pastReturn1y": -0.004793771931499435,
+    "pastReturn3y": -0.001597949511455976,
+    "pastReturn5y": -0.000958772771031402,
+    "volatilityPct": 0.006304881889646207,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101184",
@@ -1496,12 +1496,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 1000.1751,
-    "pastReturn1y": 0,
-    "pastReturn3y": 0,
-    "pastReturn5y": 0.003495754536664286,
-    "volatilityPct": 0.007543172148470533,
-    "dataAsOn": "02-07-2026"
+    "nav": 1000.1215,
+    "pastReturn1y": -0.00535906162831834,
+    "pastReturn3y": -0.0017863857876609934,
+    "pastReturn5y": 0.002423881765900582,
+    "volatilityPct": 0.009259317112373397,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101185",
@@ -1512,12 +1512,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 5019.0255,
-    "pastReturn1y": 6.274650924800729,
-    "pastReturn3y": 6.8971721890160875,
-    "pastReturn5y": 6.100633332008876,
-    "volatilityPct": 0.19604782132629953,
-    "dataAsOn": "02-07-2026"
+    "nav": 5021.2535,
+    "pastReturn1y": 6.251062245378525,
+    "pastReturn3y": 6.882749210132211,
+    "pastReturn5y": 6.103259387803628,
+    "volatilityPct": 0.19437178315067052,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101198",
@@ -1528,12 +1528,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 49.7031,
-    "pastReturn1y": -7.048187926742832,
-    "pastReturn3y": 6.281725710407482,
-    "pastReturn5y": 8.255880979249453,
-    "volatilityPct": 13.097262565713141,
-    "dataAsOn": "02-07-2026"
+    "nav": 50.2088,
+    "pastReturn1y": -6.165631617013567,
+    "pastReturn3y": 6.07064683060754,
+    "pastReturn5y": 8.32308464298357,
+    "volatilityPct": 13.08750719566022,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101199",
@@ -1544,12 +1544,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 145.0097,
-    "pastReturn1y": -7.048281662045031,
-    "pastReturn3y": 6.281783404177443,
-    "pastReturn5y": 8.25592541975768,
-    "volatilityPct": 13.097141396593898,
-    "dataAsOn": "02-07-2026"
+    "nav": 146.4852,
+    "pastReturn1y": -6.165576518653804,
+    "pastReturn3y": 6.070650137194011,
+    "pastReturn5y": 8.323117768738243,
+    "volatilityPct": 13.087391527883602,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101200",
@@ -1560,12 +1560,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 49.259,
-    "pastReturn1y": -4.98482928362971,
-    "pastReturn3y": 8.060352839591589,
-    "pastReturn5y": 9.064783518141727,
-    "volatilityPct": 12.892442274295199,
-    "dataAsOn": "02-07-2026"
+    "nav": 49.7885,
+    "pastReturn1y": -4.0097709005307625,
+    "pastReturn3y": 7.87751145015656,
+    "pastReturn5y": 9.166425867312334,
+    "volatilityPct": 12.888087766058831,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101201",
@@ -1576,12 +1576,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 133.5305,
-    "pastReturn1y": -4.984640913305305,
-    "pastReturn3y": 8.060185215543637,
-    "pastReturn5y": 9.064611948986911,
-    "volatilityPct": 12.892362302333307,
-    "dataAsOn": "02-07-2026"
+    "nav": 134.9657,
+    "pastReturn1y": -4.009715263133562,
+    "pastReturn3y": 7.877207905838435,
+    "pastReturn5y": 9.16621008013978,
+    "volatilityPct": 12.887996166212206,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101209",
@@ -1592,12 +1592,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 157.75,
-    "pastReturn1y": -0.16454654768685018,
-    "pastReturn3y": 12.701386200853303,
-    "pastReturn5y": 10.58889459952157,
-    "volatilityPct": 12.174438012199158,
-    "dataAsOn": "02-07-2026"
+    "nav": 159.14,
+    "pastReturn1y": 0.28357174365114535,
+    "pastReturn3y": 12.519838626404823,
+    "pastReturn5y": 10.706592400283043,
+    "volatilityPct": 12.172801298166771,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101222",
@@ -1608,12 +1608,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 78.4521,
-    "pastReturn1y": -12.211604095563134,
-    "pastReturn3y": -1.0205086791796436,
-    "pastReturn5y": 0.46042913041803857,
-    "volatilityPct": 18.480387790778583,
-    "dataAsOn": "02-07-2026"
+    "nav": 78.5092,
+    "pastReturn1y": -12.324502039193597,
+    "pastReturn3y": -1.4190487624965664,
+    "pastReturn5y": 0.3985607460196938,
+    "volatilityPct": 18.466206060793418,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101307",
@@ -1640,12 +1640,12 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 24.6158,
-    "pastReturn1y": -6.332572298325722,
-    "pastReturn3y": 7.990082298607093,
-    "pastReturn5y": 9.193125986951278,
-    "volatilityPct": 13.070016714806687,
-    "dataAsOn": "02-07-2026"
+    "nav": 24.8815,
+    "pastReturn1y": -5.370508412693587,
+    "pastReturn3y": 7.808823725611358,
+    "pastReturn5y": 9.294454708237465,
+    "volatilityPct": 13.06570432624277,
+    "dataAsOn": "06-07-2026"
   },
   {
     "schemeCode": "101314",
@@ -1656,11 +1656,11 @@
     "expenseRatio": null,
     "aum": null,
     "riskometer": null,
-    "nav": 245.8293,
-    "pastReturn1y": -4.408468602430182,
-    "pastReturn3y": 8.724783225762177,
-    "pastReturn5y": 9.638067137516405,
-    "volatilityPct": 12.915904101612776,
-    "dataAsOn": "02-07-2026"
+    "nav": 248.4828,
+    "pastReturn1y": -3.4267418785401293,
+    "pastReturn3y": 8.542345350932191,
+    "pastReturn5y": 9.739799956855366,
+    "volatilityPct": 12.911550719999084,
+    "dataAsOn": "06-07-2026"
   }
 ]

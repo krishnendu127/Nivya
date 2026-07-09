@@ -471,6 +471,8 @@ function ScreenerResults({ results, mode, horizonMonths, onBack, onOpenFund, onI
 /**
  * @param {{ openFund: function, setOrder: function, go: function }} props
  */
+export { ScreenerResults };
+
 export default function FundInsights({ openFund, setOrder, go }) {
   const [results, setResults] = useState(null);
   const [mode, setMode] = useState("SIP");
