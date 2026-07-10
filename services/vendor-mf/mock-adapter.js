@@ -49,5 +49,26 @@ export function createMockVendorMFAdapter() {
         status: "accepted",
       };
     },
+
+    async registerStp({ schemeCode, targetSchemeCode, amount, debitDay }) {
+      if (!schemeCode || !targetSchemeCode) throw new Error("schemeCode and targetSchemeCode required");
+      if (schemeCode === targetSchemeCode) throw new Error("STP destination must differ from source");
+      if (amount < 500) throw new Error("Minimum STP is 500");
+      if (debitDay < 1 || debitDay > 28) throw new Error("debitDay must be 1–28");
+      return {
+        vendorRef: `MOCK-STP-${randomUUID().slice(0, 8).toUpperCase()}`,
+        status: "accepted",
+      };
+    },
+
+    async registerSwp({ schemeCode, amount, debitDay }) {
+      if (!schemeCode) throw new Error("schemeCode required");
+      if (amount < 500) throw new Error("Minimum SWP is 500");
+      if (debitDay < 1 || debitDay > 28) throw new Error("debitDay must be 1–28");
+      return {
+        vendorRef: `MOCK-SWP-${randomUUID().slice(0, 8).toUpperCase()}`,
+        status: "accepted",
+      };
+    },
   };
 }

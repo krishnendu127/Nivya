@@ -427,20 +427,49 @@ export default function FundDetailScreen({
       </div>
 
       <div className="fd-tradebar">
-        {holding && (
-          <button type="button" className="fd-trade redeem" onClick={() => onOrder("REDEEM")}>
-            <b>Redeem</b>
-            <small>You hold this fund</small>
-          </button>
+        {holding ? (
+          <>
+            <div className="fd-trade-row">
+              <button type="button" className="fd-trade redeem" onClick={() => onOrder("REDEEM")}>
+                <b>Redeem</b>
+                <small>Withdraw</small>
+              </button>
+              <button type="button" className="fd-trade switch" onClick={() => onOrder("SWITCH")}>
+                <b>Switch</b>
+                <small>One-time</small>
+              </button>
+              <button type="button" className="fd-trade invest" onClick={() => onOrder("LUMPSUM")}>
+                <b>Invest</b>
+                <small>Lumpsum</small>
+              </button>
+            </div>
+            <div className="fd-trade-row">
+              <button type="button" className="fd-trade sip" onClick={() => onOrder("SIP")}>
+                <b>SIP</b>
+                <small>Monthly buy</small>
+              </button>
+              <button type="button" className="fd-trade stp" onClick={() => onOrder("STP")}>
+                <b>STP</b>
+                <small>Transfer</small>
+              </button>
+              <button type="button" className="fd-trade swp" onClick={() => onOrder("SWP")}>
+                <b>SWP</b>
+                <small>Withdraw</small>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <button type="button" className="fd-trade invest" onClick={() => onOrder("LUMPSUM")}>
+              <b>Invest</b>
+              <small>One-time investment</small>
+            </button>
+            <button type="button" className="fd-trade sip" onClick={() => onOrder("SIP")}>
+              <b>Start SIP</b>
+              <small>Invest regularly</small>
+            </button>
+          </>
         )}
-        <button type="button" className="fd-trade invest" onClick={() => onOrder("LUMPSUM")}>
-          <b>Invest</b>
-          <small>One-time investment</small>
-        </button>
-        <button type="button" className="fd-trade sip" onClick={() => onOrder("SIP")}>
-          <b>Start SIP</b>
-          <small>Invest regularly</small>
-        </button>
       </div>
     </div>
   );

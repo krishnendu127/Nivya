@@ -9,6 +9,8 @@ import {
   recordConsent,
   submitOrder,
   submitSip,
+  submitStp,
+  submitSwp,
   buildPortfolioInsights,
   illustrativeFutureValue,
 } from "./src/nivya-api.js";
@@ -372,6 +374,28 @@ const CSS = `
 .pf-flag-row svg{color:var(--faint);flex:none;}
 .pf-insight-stat{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--ink);}
 .pf-compliant-foot{font-size:10px;font-weight:600;color:var(--faint);text-align:center;line-height:1.45;margin-top:8px;padding:0 8px 16px;}
+.pf-sec-tag{font-size:10px;font-weight:800;color:var(--muted);background:var(--soft);padding:4px 8px;border-radius:999px;}
+.pf-pulse-list{display:flex;flex-direction:column;gap:8px;}
+.pf-pulse-row{display:flex;flex-direction:column;gap:8px;width:100%;text-align:left;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--soft);cursor:pointer;font-family:var(--font);}
+.pf-pulse-row:active{background:#EEF2F6;}
+.pf-pulse-main b{display:block;font-size:13px;font-weight:800;color:var(--ink);line-height:1.25;}
+.pf-pulse-main span{display:block;margin-top:3px;font-size:11px;font-weight:600;color:var(--muted);}
+.pf-pulse-metrics{display:flex;flex-direction:column;gap:8px;}
+.pf-pulse-nums{display:flex;gap:14px;flex-wrap:wrap;}
+.pf-pulse-nums span{font-size:11px;font-weight:600;color:var(--muted);}
+.pf-pulse-nums em{font-style:normal;margin-right:4px;}
+.pf-pulse-nums b{color:var(--ink);font-weight:800;}
+.pf-pulse-chip{align-self:flex-start;font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:999px;}
+.pf-pulse-chip.ahead{background:#EAF7F3;color:#0B7E78;}
+.pf-pulse-chip.trail{background:#FFF4E5;color:#B54708;}
+.pf-pulse-chip.near{background:var(--navy-soft);color:var(--navy);}
+.pf-news-list{display:flex;flex-direction:column;gap:10px;}
+.pf-news-card{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);}
+.pf-news-ic{width:32px;height:32px;border-radius:10px;background:var(--soft);color:var(--navy);display:grid;place-items:center;flex:none;}
+.pf-news-body b{display:block;font-size:12.5px;font-weight:800;color:var(--ink);line-height:1.35;}
+.pf-news-meta{display:block;margin-top:4px;font-size:10.5px;font-weight:700;color:var(--faint);}
+.pf-news-match{display:block;margin-top:6px;font-size:10.5px;font-weight:600;color:var(--muted);line-height:1.35;}
+
 .appbar-actions{display:flex;gap:8px;align-items:center;}
 .scroll{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px 16px 96px;}
 .scroll::-webkit-scrollbar{width:0;}
@@ -895,7 +919,7 @@ const CSS = `
 .fd-topbar{flex:0 0 auto;background:var(--surface);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
 .fd-topbar .back{width:38px;height:38px;border-radius:50%;border:none;background:var(--soft);display:grid;place-items:center;cursor:pointer;color:var(--ink);}
 .fd-topbar-actions{display:flex;gap:8px;}
-.fd-scroll{padding:14px 16px 120px;}
+.fd-scroll{padding:14px 16px 168px;}
 .fd-identity{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
 .fd-identity .meta{flex:1;min-width:0;}
 .fd-identity .title-row{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
@@ -973,13 +997,27 @@ const CSS = `
 .fd-compliance .chev{color:var(--faint);}
 .fd-compliance[open] .chev{transform:rotate(90deg);}
 .fd-compliance .body{padding:0 14px 12px;font-size:10.5px;font-weight:600;color:#0B7E78;line-height:1.5;}
-.fd-tradebar{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 12px 14px;display:flex;gap:8px;z-index:46;}
+.fd-tradebar{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px;z-index:46;}
+.fd-trade-row{display:flex;gap:8px;width:100%;}
 .fd-trade{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 6px;border-radius:14px;cursor:pointer;font-family:var(--font);min-height:54px;}
 .fd-trade b{font-size:13px;font-weight:800;}
 .fd-trade small{font-size:9px;font-weight:600;opacity:.85;}
 .fd-trade.redeem{background:var(--surface);border:1.5px solid #FECDCA;color:var(--down);}
+.fd-trade.switch{background:var(--surface);border:1.5px solid #C7D7FE;color:var(--navy);}
 .fd-trade.invest{background:var(--surface);border:1.5px solid #ABEFC6;color:var(--up);}
-.fd-trade.sip{background:var(--grad);border:none;color:#fff;flex:1.15;}
+.fd-trade.sip{background:var(--grad);border:none;color:#fff;}
+.fd-trade.stp{background:var(--navy-soft);border:1.5px solid #B2CCFF;color:var(--navy);}
+.fd-trade.swp{background:#FFF4E5;border:1.5px solid #FEDF89;color:#B54708;}
+.ord-fund-label{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.ord-switch-arrow{display:flex;justify-content:center;margin:-4px 0 8px;color:var(--navy);}
+.ord-target-block{margin-bottom:4px;}
+.sip-plan-tabs{display:flex;gap:6px;margin:0 0 12px;padding:4px;background:var(--soft);border-radius:12px;}
+.sip-plan-tabs button{flex:1;border:none;background:transparent;border-radius:10px;padding:9px 6px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;font-family:var(--font);}
+.sip-plan-tabs button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);}
+.sip-plan-chip{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:999px;margin-right:6px;vertical-align:middle;}
+.sip-plan-chip.sip{background:#EAF7F3;color:#0B7E78;}
+.sip-plan-chip.stp{background:var(--navy-soft);color:var(--navy);}
+.sip-plan-chip.swp{background:#FFF4E5;color:#B54708;}
 .ord-scrim{z-index:70;}
 .ord-sheet{max-height:92%;overflow-y:auto;padding-bottom:28px;position:relative;}
 .ord-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;}
@@ -1424,7 +1462,7 @@ function BottomNav({ tab, go }){
   const items = [
     { k:"home", t:"Home", I:Home },
     { k:"discover", t:"Explore", I:Compass },
-    { k:"sips", t:"SIPs", I:Repeat },
+    { k:"sips", t:"Plans", I:Repeat },
     { k:"portfolio", t:"Portfolio", I:PieChart },
     { k:"more", t:"Profile", I:User },
   ];
@@ -1544,7 +1582,7 @@ export default function App(){
     toastTimer.current = setTimeout(()=>setToastMsg(null), 2400);
   };
 
-  const applyLocalOrder = (mode, { amount, units, sipDay })=>{
+  const applyLocalOrder = (mode, { amount, units, sipDay, targetFund, targetSchemeCode })=>{
     const fund = order.fund;
     if(mode==="LUMPSUM"){
       setHoldings(prev=>{
@@ -1556,7 +1594,7 @@ export default function App(){
       });
       toast(`Lumpsum order placed · ${inr(amount)} in ${fund.h}`);
     } else if(mode==="SIP"){
-      setSips(prev=>[...prev, { id:fund.id, amount, day:sipDay, status:"Active", nextDebit:`${sipDay} Jul` }]);
+      setSips(prev=>[...prev, { id:fund.id, amount, day:sipDay, status:"Active", nextDebit:`${sipDay} Jul`, planType:"sip" }]);
       toast(`SIP registered · ${inr0(amount)}/mo on ${sipDay}th`);
     } else if(mode==="REDEEM"){
       setHoldings(prev=>{
@@ -1567,11 +1605,65 @@ export default function App(){
         const cp = [...prev]; cp[idx] = { ...h, units:nu }; return cp;
       });
       toast(`Redeem order placed · ${units.toFixed(2)} units of ${fund.h}`);
+    } else if(mode==="SWITCH"){
+      const toId = targetSchemeCode || targetFund?.id;
+      const toFund = targetFund || fundById(toId);
+      const fromNav = navs[fund.id]?.nav ?? 0;
+      const toNav = navs[toId]?.nav ?? fromNav;
+      const switchValue = units * fromNav;
+      const toUnits = toNav > 0 ? switchValue / toNav : 0;
+      setHoldings(prev=>{
+        let next = [...prev];
+        const fromIdx = next.findIndex(h=>h.id===fund.id);
+        if(fromIdx<0) return prev;
+        const fromH = next[fromIdx];
+        const left = fromH.units - units;
+        if(left<=0.001) next = next.filter(x=>x.id!==fund.id);
+        else next[fromIdx] = { ...fromH, units:left };
+        const toIdx = next.findIndex(h=>h.id===toId);
+        if(toIdx<0) next.push({ id:toId, units:toUnits, avgNav:toNav, folio:fromH.folio || "NEW/FOLIO" });
+        else {
+          const th = next[toIdx];
+          const nu = th.units + toUnits;
+          const navg = (th.units*th.avgNav + toUnits*toNav)/nu;
+          next[toIdx] = { ...th, units:nu, avgNav:navg };
+        }
+        return next;
+      });
+      toast(`Switch placed · ${fund.h} → ${toFund?.h || toId}`);
+    } else if(mode==="STP"){
+      const toId = targetSchemeCode || targetFund?.id;
+      const toFund = targetFund || fundById(toId);
+      setSips(prev=>[...prev, {
+        id:fund.id,
+        amount,
+        day:sipDay,
+        status:"Active",
+        nextDebit:`${sipDay} Jul`,
+        planType:"stp",
+        targetSchemeCode:toId,
+        targetName:toFund?.s || toId,
+        sipKey:`stp-${fund.id}-${toId}-${sipDay}`,
+      }]);
+      toast(`STP registered · ${inr0(amount)}/mo ${fund.h} → ${toFund?.h || toId}`);
+    } else if(mode==="SWP"){
+      setSips(prev=>[...prev, {
+        id:fund.id,
+        amount,
+        day:sipDay,
+        status:"Active",
+        nextDebit:`${sipDay} Jul`,
+        planType:"swp",
+        sipKey:`swp-${fund.id}-${sipDay}`,
+      }]);
+      toast(`SWP registered · ${inr0(amount)}/mo from ${fund.h}`);
     }
   };
 
-  const confirmOrder = async (mode, { amount, units, sipDay })=>{
+  const confirmOrder = async (mode, payload)=>{
+    const { amount, units, sipDay, targetFund, targetSchemeCode } = payload;
     const fund = order.fund;
+    const toCode = targetSchemeCode || targetFund?.id;
     if (apiConnected) {
       try {
         if (mode === "LUMPSUM" || mode === "REDEEM") {
@@ -1582,19 +1674,45 @@ export default function App(){
             amount: mode === "LUMPSUM" ? amount : undefined,
             units: mode === "REDEEM" ? units : undefined,
           });
-          applyLocalOrder(mode, { amount, units, sipDay });
+          applyLocalOrder(mode, payload);
+        } else if (mode === "SWITCH") {
+          await recordConsent(fund.id);
+          if (toCode) await recordConsent(toCode);
+          await submitOrder({
+            type: "switch",
+            schemeCode: fund.id,
+            targetSchemeCode: toCode,
+            units,
+            amount,
+          });
+          applyLocalOrder(mode, payload);
         } else if (mode === "SIP") {
           await recordConsent(fund.id);
           const sip = await submitSip({ schemeCode: fund.id, amount, debitDay: sipDay });
           setSips((prev) => [...prev, mapSip(sip)]);
           toast(`SIP registered · ${inr0(amount)}/mo on ${sipDay}th`);
+        } else if (mode === "STP") {
+          await recordConsent(fund.id);
+          if (toCode) await recordConsent(toCode);
+          const stp = await submitStp({
+            schemeCode: fund.id,
+            targetSchemeCode: toCode,
+            amount,
+            debitDay: sipDay,
+          });
+          setSips((prev) => [...prev, mapSip(stp)]);
+          toast(`STP registered · ${inr0(amount)}/mo`);
+        } else if (mode === "SWP") {
+          const swp = await submitSwp({ schemeCode: fund.id, amount, debitDay: sipDay });
+          setSips((prev) => [...prev, mapSip(swp)]);
+          toast(`SWP registered · ${inr0(amount)}/mo`);
         }
       } catch (err) {
         console.warn("Order API failed — falling back to local demo", err);
-        applyLocalOrder(mode, { amount, units, sipDay });
+        applyLocalOrder(mode, payload);
       }
     } else {
-      applyLocalOrder(mode, { amount, units, sipDay });
+      applyLocalOrder(mode, payload);
     }
     setOrder(null);
   };
@@ -1615,7 +1733,7 @@ export default function App(){
     home: "",
     discover: "Explore",
     portfolio: "Portfolio",
-    sips: "SIPs",
+    sips: "Plans",
     more: "Profile",
   };
 
@@ -1685,6 +1803,7 @@ export default function App(){
               sips={sips}
               openFund={openFund}
               fundById={fundById}
+              funds={funds}
               toast={toast}
             />
           )}
@@ -1753,7 +1872,8 @@ export default function App(){
               fund={order.fund}
               navs={navs}
               mode={order.mode}
-              holding={curHolding}
+              holding={holdings.find((h) => h.id === order.fund.id) || null}
+              funds={funds}
               onClose={() => setOrder(null)}
               onConfirm={confirmOrder}
               arn={NIVYA_ARN}

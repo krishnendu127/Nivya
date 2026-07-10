@@ -1,9 +1,9 @@
 /**
- * Order sheets — Lumpsum, SIP, Redeem
+ * Order sheets — Lumpsum, SIP, Redeem, Switch, STP, SWP
  */
 import React, { useMemo, useState } from "react";
 import {
-  X, ChevronRight, ChevronDown, Loader2, Building2, AlertTriangle, ArrowRight,
+  X, ChevronRight, ChevronDown, Loader2, Building2, AlertTriangle, ArrowRight, ArrowLeftRight,
 } from "lucide-react";
 
 const AV_COLORS = ["#2456BE", "#0E9C8E", "#7A5AF8", "#E8943A", "#D6409F", "#16A35A"];
@@ -30,13 +30,14 @@ function FundAvatar({ h, size = 40 }) {
   );
 }
 
-function FundCard({ fund, nav, prevNav }) {
+function FundCard({ fund, nav, prevNav, label }) {
   const chg = nav / prevNav - 1;
   const up = chg >= 0;
   return (
     <div className="ord-fund-card">
       <FundAvatar h={fund.h}/>
       <div className="meta">
+        {label && <div className="ord-fund-label">{label}</div>}
         <div className="nm">{fund.s} — Regular Plan</div>
         <div className="sub">{fund.cat} Fund · {fund.h} Mutual Fund</div>
         <div className={`navline num ${up ? "up" : "down"}`}>
@@ -94,62 +95,110 @@ function SummaryRow({ label, value, bold }) {
   );
 }
 
-function LoadingOverlay() {
+function LoadingOverlay({ label }) {
   return (
     <div className="ord-loading">
       <Loader2 size={32} className="ord-spin"/>
-      <b>Placing your order…</b>
+      <b>{label || "Placing your order…"}</b>
       <p>Please do not close this screen.</p>
     </div>
   );
 }
 
+function TargetFundPicker({ funds, excludeId, value, onChange, navs }) {
+  const options = useMemo(
+    () => (funds || []).filter((f) => f.id !== excludeId).slice(0, 80),
+    [funds, excludeId],
+  );
+  const selected = options.find((f) => f.id === value) || null;
+  return (
+    <div className="ord-target-block">
+      <div className="field-lbl">To scheme (Regular plan)</div>
+      <div className="ord-select-wrap">
+        <select value={value || ""} onChange={(e) => onChange(e.target.value || null)}>
+          <option value="">Select destination fund</option>
+          {options.map((f) => (
+            <option key={f.id} value={f.id}>{f.h} — {f.s} ({f.cat})</option>
+          ))}
+        </select>
+        <ChevronDown size={16}/>
+      </div>
+      {selected && navs?.[selected.id] && (
+        <FundCard fund={selected} nav={navs[selected.id].nav} prevNav={navs[selected.id].prevNav} label="Destination"/>
+      )}
+    </div>
+  );
+}
+
 const MODE_META = {
-  LUMPSUM: { title: "Lumpsum investment", sub: "One-time investment", cta: "Confirm investment" },
-  SIP: { title: "Start SIP", sub: "Build wealth with disciplined investing", cta: "Register SIP & setup mandate" },
-  REDEEM: { title: "Redeem investment", sub: "Withdraw from your investment", cta: "Confirm redeem" },
+  LUMPSUM: { title: "Lumpsum investment", sub: "One-time investment", cta: "Confirm investment", loading: "Placing your order…" },
+  SIP: { title: "Start SIP", sub: "Build wealth with disciplined investing", cta: "Register SIP & setup mandate", loading: "Registering SIP…" },
+  REDEEM: { title: "Redeem investment", sub: "Withdraw from your investment", cta: "Confirm redeem", loading: "Placing redeem…" },
+  SWITCH: { title: "Switch", sub: "One-time move between Regular plans", cta: "Confirm switch", loading: "Placing switch…" },
+  STP: { title: "Start STP", sub: "Systematic transfer between Regular plans", cta: "Register STP", loading: "Registering STP…" },
+  SWP: { title: "Start SWP", sub: "Systematic withdrawal from this holding", cta: "Register SWP", loading: "Registering SWP…" },
 };
 
 /**
- * @param {{ fund, navs, mode, holding, onClose, onConfirm, arn, euin, go, toast }} props
+ * @param {{ fund, navs, mode, holding, funds, onClose, onConfirm, arn, euin, go, toast }} props
  */
-export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfirm, arn, euin, go, toast }) {
+export default function OrderSheet({ fund, navs, mode, holding, funds = [], onClose, onConfirm, arn, euin, go, toast }) {
   const q = navs[fund.id];
   const isSip = mode === "SIP";
   const isRedeem = mode === "REDEEM";
+  const isSwitch = mode === "SWITCH";
+  const isStp = mode === "STP";
+  const isSwp = mode === "SWP";
+  const isSystematic = isSip || isStp || isSwp;
+  const needsHolding = isRedeem || isSwitch || isStp || isSwp;
+  const needsTarget = isSwitch || isStp;
   const meta = MODE_META[mode] ?? MODE_META.LUMPSUM;
 
-  const [amount, setAmount] = useState(isSip ? 5000 : 10000);
+  const [amount, setAmount] = useState(isSip || isStp || isSwp ? 5000 : 10000);
   const [sipDay, setSipDay] = useState(10);
   const [redeemMode, setRedeemMode] = useState("units");
   const [redeemUnits, setRedeemUnits] = useState(holding ? String(Math.min(1000, holding.units)) : "0");
   const [redeemAmount, setRedeemAmount] = useState(5000);
+  const [targetId, setTargetId] = useState(null);
   const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const maxUnits = holding?.units ?? 0;
   const invested = holding ? holding.units * holding.avgNav : 0;
-  const currentVal = holding ? holding.units * q.nav : 0;
+  const currentVal = holding && q ? holding.units * q.nav : 0;
+  const targetFund = useMemo(() => (funds || []).find((f) => f.id === targetId) || null, [funds, targetId]);
 
   const units = useMemo(() => {
-    if (!isRedeem) return amount / q.nav;
-    if (redeemMode === "units") return parseFloat(redeemUnits) || 0;
-    return (redeemAmount || 0) / q.nav;
-  }, [isRedeem, redeemMode, redeemUnits, redeemAmount, amount, q.nav]);
+    if (!q) return 0;
+    if (isRedeem || isSwitch) {
+      if (redeemMode === "units") return parseFloat(redeemUnits) || 0;
+      return (redeemAmount || 0) / q.nav;
+    }
+    if (isStp || isSwp || isSip) return amount / q.nav;
+    return amount / q.nav;
+  }, [isRedeem, isSwitch, isStp, isSwp, isSip, redeemMode, redeemUnits, redeemAmount, amount, q]);
 
-  const total = isRedeem ? units * q.nav : amount;
+  const total = (isRedeem || isSwitch) ? units * (q?.nav ?? 0) : amount;
 
   const err = useMemo(() => {
-    if (isRedeem) {
-      if (units <= 0) return "Enter units or amount to redeem";
+    if (needsHolding && !holding) return "You need a holding in this fund to continue";
+    if (needsTarget && !targetId) return "Select a destination Regular-plan scheme";
+    if (needsTarget && targetId === fund.id) return "Destination must be a different scheme";
+    if (isRedeem || isSwitch) {
+      if (units <= 0) return "Enter units or amount";
       if (units > maxUnits + 0.0001) return `Maximum ${maxUnits.toFixed(3)} units available`;
+      return "";
+    }
+    if (isSwp || isStp) {
+      if (amount < 500) return "Minimum installment: ₹500";
+      if (amount > currentVal + 0.01) return "Amount exceeds current holding value";
       return "";
     }
     if (amount < fund.minSip) return `Minimum ${isSip ? "SIP" : "lumpsum"}: ${inr0(fund.minSip)}`;
     return "";
-  }, [isRedeem, units, maxUnits, amount, fund.minSip, isSip]);
+  }, [needsHolding, holding, needsTarget, targetId, fund.id, fund.minSip, isRedeem, isSwitch, isSwp, isStp, isSip, units, maxUnits, amount, currentVal]);
 
-  const needsConsent = !isRedeem;
+  const needsConsent = !isRedeem && !isSwp;
   const canSubmit = !err && total > 0 && (!needsConsent || consent);
 
   const arnDisplay = arn.replace(/^ARN-?/i, "");
@@ -166,9 +215,11 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
     setLoading(true);
     try {
       await onConfirm(mode, {
-        amount: isRedeem ? total : amount,
-        units: isRedeem ? units : amount / q.nav,
+        amount: (isRedeem || isSwitch) ? total : amount,
+        units: (isRedeem || isSwitch) ? units : amount / (q?.nav || 1),
         sipDay,
+        targetFund,
+        targetSchemeCode: targetId,
       });
     } catch {
       toast?.("Unable to place order. Please check details and try again");
@@ -183,6 +234,10 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
     setRedeemMode("units");
   };
 
+  const showHoldingBox = needsHolding && holding;
+  const showRedeemInputs = isRedeem || isSwitch;
+  const showInstallmentInputs = isStp || isSwp || isSip;
+
   return (
     <div className="scrim ord-scrim" onClick={loading ? undefined : onClose}>
       <div className="sheet ord-sheet" onClick={(e) => e.stopPropagation()}>
@@ -195,9 +250,14 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
           <button type="button" className="iconbtn" onClick={onClose} disabled={loading} aria-label="Close"><X size={18}/></button>
         </div>
 
-        <FundCard fund={fund} nav={q.nav} prevNav={q.prevNav}/>
+        <FundCard
+          fund={fund}
+          nav={q.nav}
+          prevNav={q.prevNav}
+          label={needsTarget || isSwp ? (isSwp ? "From holding" : "From") : undefined}
+        />
 
-        {isRedeem && holding && (
+        {showHoldingBox && (
           <div className="ord-holding-box">
             <div className="grid">
               <div><span>Available units</span><b className="num">{holding.units.toFixed(3)}</b></div>
@@ -210,13 +270,26 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
           </div>
         )}
 
-        {isRedeem ? (
+        {needsTarget && (
+          <>
+            <div className="ord-switch-arrow" aria-hidden><ArrowLeftRight size={16}/></div>
+            <TargetFundPicker
+              funds={funds}
+              excludeId={fund.id}
+              value={targetId}
+              onChange={setTargetId}
+              navs={navs}
+            />
+          </>
+        )}
+
+        {showRedeemInputs ? (
           <>
             <div className="ord-toggle">
               <button type="button" className={redeemMode === "units" ? "on" : ""} onClick={() => setRedeemMode("units")}>Units</button>
               <button type="button" className={redeemMode === "amount" ? "on" : ""} onClick={() => setRedeemMode("amount")}>Amount (₹)</button>
             </div>
-            <div className="field-lbl">{redeemMode === "units" ? "Units to redeem" : "Amount to redeem"}</div>
+            <div className="field-lbl">{redeemMode === "units" ? (isSwitch ? "Units to switch" : "Units to redeem") : (isSwitch ? "Amount to switch" : "Amount to redeem")}</div>
             {redeemMode === "units" ? (
               <UnitsInput value={redeemUnits} onChange={setRedeemUnits} onClear={() => setRedeemUnits("")}/>
             ) : (
@@ -231,17 +304,79 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
               })}
             </div>
             <p className="ord-hint">Maximum available: {maxUnits.toFixed(3)} units</p>
-            <div className="ord-warn">
-              <AlertTriangle size={16}/>
-              <div>
-                <b>Exit load (if any)</b>
-                <p>0.50% if redeemed within 365 days. <button type="button" onClick={() => toast?.("Exit load per SID — demo")}>View details</button></p>
+            {isRedeem && (
+              <div className="ord-warn">
+                <AlertTriangle size={16}/>
+                <div>
+                  <b>Exit load (if any)</b>
+                  <p>0.50% if redeemed within 365 days. <button type="button" onClick={() => toast?.("Exit load per SID — demo")}>View details</button></p>
+                </div>
               </div>
+            )}
+            {isSwitch && (
+              <div className="ord-warn">
+                <AlertTriangle size={16}/>
+                <div>
+                  <b>Switch is an order instruction</b>
+                  <p>Exit load / tax may apply per SID. Nivya does not recommend which scheme to switch into.</p>
+                </div>
+              </div>
+            )}
+          </>
+        ) : showInstallmentInputs ? (
+          <>
+            <div className="field-lbl">
+              {isSip ? "SIP amount (monthly)" : isStp ? "STP amount (monthly)" : "SWP amount (monthly)"}
             </div>
+            <AmountInput
+              value={amount}
+              onChange={setAmount}
+              onClear={() => setAmount(0)}
+              placeholder={String(isSip ? fund.minSip : 500)}
+            />
+            <div className="ord-chips">
+              {[1000, 2500, 5000].map((a) => (
+                <button key={a} type="button" onClick={() => addAmount(a)}>+{inr0(a)}</button>
+              ))}
+              <button type="button" onClick={() => setAmount(isSip ? 100000 : Math.max(500, Math.floor(currentVal || 10000)))}>Max</button>
+            </div>
+            <p className="ord-hint">
+              {isSip
+                ? `Minimum SIP: ${inr0(fund.minSip)}`
+                : isStp
+                  ? "STP moves amount from this holding into the destination scheme on the chosen day."
+                  : "SWP withdraws to your linked bank on the chosen day. Not investment advice."}
+            </p>
+
+            <div className="field-lbl">{isSwp ? "Withdrawal day" : "Debit / transfer day"}</div>
+            <div className="ord-select-wrap">
+              <select value={sipDay} onChange={(e) => setSipDay(Number(e.target.value))}>
+                {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
+                  <option key={d} value={d}>{ordinal(d)} of every month</option>
+                ))}
+              </select>
+              <ChevronDown size={16}/>
+            </div>
+            {isSip && (
+              <div className="ord-mandate-info">
+                <Building2 size={18}/>
+                <p>First-time SIP? We will set up an e-mandate on your linked bank account for automatic monthly debits.</p>
+              </div>
+            )}
+            {(isStp || isSwp) && (
+              <div className="ord-mandate-info">
+                <Building2 size={18}/>
+                <p>
+                  {isStp
+                    ? "STP is registered as a systematic transfer instruction on exchange rails (demo). Amounts come from your existing units."
+                    : "SWP is registered as a systematic withdrawal instruction (demo). Proceeds credit your linked bank after NAV allotment."}
+                </p>
+              </div>
+            )}
           </>
         ) : (
           <>
-            <div className="field-lbl">{isSip ? "SIP amount (monthly)" : "Investment amount"}</div>
+            <div className="field-lbl">Investment amount</div>
             <AmountInput
               value={amount}
               onChange={setAmount}
@@ -249,37 +384,16 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
               placeholder={String(fund.minSip)}
             />
             <div className="ord-chips">
-              {(isSip ? [1000, 2500, 5000] : [1000, 5000, 10000]).map((a) => (
+              {[1000, 5000, 10000].map((a) => (
                 <button key={a} type="button" onClick={() => addAmount(a)}>+{inr0(a)}</button>
               ))}
-              <button type="button" onClick={() => setAmount(isSip ? 100000 : 500000)}>Max</button>
+              <button type="button" onClick={() => setAmount(500000)}>Max</button>
             </div>
-            <p className="ord-hint">Minimum {isSip ? "SIP" : "lumpsum"}: {inr0(fund.minSip)}</p>
-
-            {!isSip && (
-              <div className="ord-estimate">
-                <div><span>Estimated units (approx.)</span><b className="num">{units.toFixed(2)} Units</b></div>
-                <div><span>Applicable NAV</span><b className="num">{inr(q.nav)}</b></div>
-              </div>
-            )}
-
-            {isSip && (
-              <>
-                <div className="field-lbl">Debit day</div>
-                <div className="ord-select-wrap">
-                  <select value={sipDay} onChange={(e) => setSipDay(Number(e.target.value))}>
-                    {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
-                      <option key={d} value={d}>{ordinal(d)} of every month</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={16}/>
-                </div>
-                <div className="ord-mandate-info">
-                  <Building2 size={18}/>
-                  <p>First-time SIP? We will set up an e-mandate on your linked bank account for automatic monthly debits.</p>
-                </div>
-              </>
-            )}
+            <p className="ord-hint">Minimum lumpsum: {inr0(fund.minSip)}</p>
+            <div className="ord-estimate">
+              <div><span>Estimated units (approx.)</span><b className="num">{units.toFixed(2)} Units</b></div>
+              <div><span>Applicable NAV</span><b className="num">{inr(q.nav)}</b></div>
+            </div>
           </>
         )}
 
@@ -289,6 +403,26 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
               <SummaryRow label="SIP amount (monthly)" value={inr0(amount)}/>
               <SummaryRow label="Debit day" value={`${ordinal(sipDay)} of every month`}/>
               <SummaryRow label="First debit (on or after)" value={firstDebit} bold/>
+            </>
+          ) : isStp ? (
+            <>
+              <SummaryRow label="From" value={fund.s}/>
+              <SummaryRow label="To" value={targetFund?.s ?? "—"}/>
+              <SummaryRow label="STP amount (monthly)" value={inr0(amount)}/>
+              <SummaryRow label="Transfer day" value={`${ordinal(sipDay)} of every month`} bold/>
+            </>
+          ) : isSwp ? (
+            <>
+              <SummaryRow label="From holding" value={fund.s}/>
+              <SummaryRow label="SWP amount (monthly)" value={inr0(amount)}/>
+              <SummaryRow label="Withdrawal day" value={`${ordinal(sipDay)} of every month`} bold/>
+            </>
+          ) : isSwitch ? (
+            <>
+              <SummaryRow label="From" value={fund.s}/>
+              <SummaryRow label="To" value={targetFund?.s ?? "—"}/>
+              <SummaryRow label="Units" value={units.toFixed(3)}/>
+              <SummaryRow label="Estimated value" value={inr(total)} bold/>
             </>
           ) : isRedeem ? (
             <>
@@ -311,7 +445,7 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
           <label className="ord-consent">
             <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)}/>
             <span>
-              I have read the SID and KIM of this scheme and understand the risks involved.{" "}
+              I have read the SID and KIM of {needsTarget ? "both schemes" : "this scheme"} and understand the risks involved.{" "}
               <button type="button" onClick={() => toast?.("SID/KIM viewer — production")}>View</button>
             </span>
           </label>
@@ -321,16 +455,19 @@ export default function OrderSheet({ fund, navs, mode, holding, onClose, onConfi
 
         <button
           type="button"
-          className={`btn btn-full ord-cta ${isRedeem ? "redeem" : "buy"}`}
+          className={`btn btn-full ord-cta ${isRedeem || isSwp ? "redeem" : "buy"}`}
           disabled={!canSubmit || loading}
           onClick={handleConfirm}
         >
-          {meta.cta} {!isRedeem && <ArrowRight size={16}/>}
+          {meta.cta} {!isRedeem && !isSwp && <ArrowRight size={16}/>}
         </button>
 
-        <p className="ord-foot-disc">Mutual fund investments are subject to market risks. Read all scheme-related documents carefully.</p>
+        <p className="ord-foot-disc">
+          Mutual fund investments are subject to market risks. Read all scheme-related documents carefully.
+          {isSystematic ? " Systematic plans are order instructions — not investment advice." : ""}
+        </p>
 
-        {loading && <LoadingOverlay/>}
+        {loading && <LoadingOverlay label={meta.loading}/>}
       </div>
     </div>
   );

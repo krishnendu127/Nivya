@@ -91,7 +91,8 @@ async function buildPortfolio() {
     return h.units * ((holding?.currentNav ?? h.avgNav) - prev);
   }))).reduce((s, v) => s + v, 0);
   const totalReturns = currentValue - invested;
-  const insights = await buildPortfolioInsights(holdings, (code) => getCatalogScheme(code));
+  const peerFunds = await listCatalogSchemes({});
+  const insights = await buildPortfolioInsights(holdings, (code) => getCatalogScheme(code), peerFunds);
   return {
     currentValue,
     invested,
@@ -214,6 +215,77 @@ app.post("/v1/sips", async (req) => {
     amount,
     debitDay,
     status: "active",
+    planType: "sip",
+    nextDebit: `${debitDay} next month`,
+    vendorRef: result.vendorRef,
+  };
+});
+
+app.post("/v1/stps", async (req) => {
+  const user = authUser(req);
+  if (!user) throw app.httpErrors.unauthorized();
+  if (user.kycStatus !== "registered") {
+    throw app.httpErrors.forbidden("KYC must be complete before registering STP");
+  }
+  const { schemeCode, targetSchemeCode, amount, debitDay } = req.body || {};
+  if (!schemeCode || !targetSchemeCode || amount == null || debitDay == null) {
+    throw app.httpErrors.badRequest("schemeCode, targetSchemeCode, amount, debitDay required");
+  }
+  const { arn, euin } = assertOrderCompliance({});
+  const result = await adapter.registerStp({
+    schemeCode,
+    targetSchemeCode,
+    amount,
+    debitDay,
+    arn,
+    euin,
+    investorRef: user.id,
+  });
+  const fromScheme = (await getCatalogScheme(schemeCode)) ?? schemeByCode(schemeCode);
+  const toScheme = (await getCatalogScheme(targetSchemeCode)) ?? schemeByCode(targetSchemeCode);
+  return {
+    id: randomUUID(),
+    schemeCode,
+    schemeName: fromScheme?.name,
+    targetSchemeCode,
+    targetSchemeName: toScheme?.name,
+    amount,
+    debitDay,
+    status: "active",
+    planType: "stp",
+    nextDebit: `${debitDay} next month`,
+    vendorRef: result.vendorRef,
+  };
+});
+
+app.post("/v1/swps", async (req) => {
+  const user = authUser(req);
+  if (!user) throw app.httpErrors.unauthorized();
+  if (user.kycStatus !== "registered") {
+    throw app.httpErrors.forbidden("KYC must be complete before registering SWP");
+  }
+  const { schemeCode, amount, debitDay } = req.body || {};
+  if (!schemeCode || amount == null || debitDay == null) {
+    throw app.httpErrors.badRequest("schemeCode, amount, debitDay required");
+  }
+  const { arn, euin } = assertOrderCompliance({});
+  const result = await adapter.registerSwp({
+    schemeCode,
+    amount,
+    debitDay,
+    arn,
+    euin,
+    investorRef: user.id,
+  });
+  const scheme = (await getCatalogScheme(schemeCode)) ?? schemeByCode(schemeCode);
+  return {
+    id: randomUUID(),
+    schemeCode,
+    schemeName: scheme?.name,
+    amount,
+    debitDay,
+    status: "active",
+    planType: "swp",
     nextDebit: `${debitDay} next month`,
     vendorRef: result.vendorRef,
   };

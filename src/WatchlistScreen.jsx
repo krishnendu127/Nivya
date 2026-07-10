@@ -133,7 +133,7 @@ export default function WatchlistScreen({
                       toggleWatch(fund.id);
                     }}
                     aria-label="Remove from watchlist"
-                 >>
+                  >
                     <Star size={20} fill="#F5A623" color="#F5A623" />
                   </button>
                 </div>

@@ -81,31 +81,49 @@ function MandateBounceBanner({ onFix, onDismiss }) {
   );
 }
 
-function SipCard({ sip, fund, onManage, onFixMandate }) {
+function planLabel(planType) {
+  if (planType === "stp") return "STP";
+  if (planType === "swp") return "SWP";
+  return "SIP";
+}
+
+function SipCard({ sip, fund, onManage, onFixMandate, fundById }) {
   const failed = sip.status === "Failed";
+  const planType = sip.planType || "sip";
+  const target = sip.targetSchemeCode ? fundById?.(sip.targetSchemeCode) : null;
+  const dayLbl = planType === "swp" ? "SWP day" : planType === "stp" ? "STP day" : "SIP day";
+  const nextLbl = planType === "swp" ? "Next withdrawal" : planType === "stp" ? "Next transfer" : "Next debit";
   return (
     <div className={`sip-card-v2 ${failed ? "failed" : ""}`}>
       <button type="button" className="sip-card-main" onClick={() => onManage(sip)}>
         <FundAvatar h={fund.h} size={38}/>
         <div className="meta">
           <div className="top">
-            <div className="nm">{fund.s}</div>
+            <div className="nm">
+              <span className={`sip-plan-chip ${planType}`}>{planLabel(planType)}</span>
+              {fund.s}
+            </div>
             <SipStatusBadge status={sip.status}/>
           </div>
           <div className="sub">
             <span className="reg-badge" style={{ marginTop: 0, display: "inline-block" }}>Regular</span>
             <span>{fund.cat}</span>
           </div>
+          {planType === "stp" && (
+            <div className="sub" style={{ marginTop: 4 }}>
+              → {target?.s || sip.targetName || sip.targetSchemeCode || "Destination scheme"}
+            </div>
+          )}
           <div className="amt num">{inr0(sip.amount)}<span> per month</span></div>
           <div className="det">
-            <span>SIP day · {ordinal(sip.day)}</span>
+            <span>{dayLbl} · {ordinal(sip.day)}</span>
             <span>·</span>
-            <span>Next debit · {sip.nextDebit ?? "—"}</span>
+            <span>{nextLbl} · {sip.nextDebit ?? "—"}</span>
           </div>
         </div>
         <ChevronRight size={16} color="var(--faint)"/>
       </button>
-      {failed && (
+      {failed && planType === "sip" && (
         <div className="sip-fail-box">
           <Info size={14}/>
           <div>
@@ -118,14 +136,17 @@ function SipCard({ sip, fund, onManage, onFixMandate }) {
   );
 }
 
-function ManageSipSheet({ sip, fund, onClose, onPause, onModify, onCancel }) {
+function ManageSipSheet({ sip, fund, onClose, onPause, onModify, onCancel, fundById }) {
   if (!sip || !fund) return null;
+  const planType = sip.planType || "sip";
+  const label = planLabel(planType);
+  const target = sip.targetSchemeCode ? fundById?.(sip.targetSchemeCode) : null;
   return (
     <div className="scrim" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="grab"/>
         <div className="sip-sheet-head">
-          <h4>Manage SIP</h4>
+          <h4>Manage {label}</h4>
           <button type="button" className="sip-sheet-x" onClick={onClose}><X size={20}/></button>
         </div>
         <div className="sip-sheet-fund">
@@ -133,13 +154,16 @@ function ManageSipSheet({ sip, fund, onClose, onPause, onModify, onCancel }) {
           <div>
             <div className="nm">{fund.s}</div>
             <div className="sub">{inr0(sip.amount)}/month · {ordinal(sip.day)} of month</div>
+            {planType === "stp" && (
+              <div className="sub">→ {target?.s || sip.targetName || sip.targetSchemeCode}</div>
+            )}
           </div>
         </div>
         <div className="sip-manage-menu">
           {[
-            { ic: <Pause size={18}/>, t: "Pause SIP", s: "Temporarily stop future debits", action: onPause },
-            { ic: <Pencil size={18}/>, t: "Modify amount", s: "Change monthly SIP amount", action: onModify },
-            { ic: <Ban size={18}/>, t: "Cancel SIP", s: "Stop this SIP permanently", action: onCancel, danger: true },
+            { ic: <Pause size={18}/>, t: `Pause ${label}`, s: "Temporarily stop future installments", action: onPause },
+            { ic: <Pencil size={18}/>, t: "Modify amount", s: `Change monthly ${label} amount`, action: onModify },
+            { ic: <Ban size={18}/>, t: `Cancel ${label}`, s: `Stop this ${label} permanently`, action: onCancel, danger: true },
           ].map((row) => (
             <button key={row.t} type="button" className={`sip-manage-row ${row.danger ? "danger" : ""}`} onClick={row.action}>
               <span className="ic">{row.ic}</span>
@@ -152,12 +176,12 @@ function ManageSipSheet({ sip, fund, onClose, onPause, onModify, onCancel }) {
           ))}
         </div>
         <div className="sip-sheet-info">
-          <div><span>Next debit</span><b>{sip.nextDebit ?? "—"}</b></div>
+          <div><span>Next</span><b>{sip.nextDebit ?? "—"}</b></div>
           <div><span>Amount</span><b className="num">{inr0(sip.amount)}</b></div>
           <div><span>Bank</span><b>{sip.bankAccount ?? "HDFC Bank •••• 4521"}</b></div>
         </div>
         <p className="sip-sheet-tip">
-          Changes apply from the next scheduled debit date. Nivya does not provide investment advice.
+          Changes apply from the next scheduled date. Systematic plans are order instructions — not investment advice.
         </p>
       </div>
     </div>
@@ -277,6 +301,7 @@ function FailedMandateModal({ sip, fund, onClose, onUpdate, onViewAll }) {
 export default function SipsScreen({ sips, setSips, holdings, fundById, go, toast }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("all");
+  const [planTab, setPlanTab] = useState("all");
   const [bounceDismissed, setBounceDismissed] = useState(false);
   const [manageSip, setManageSip] = useState(null);
   const [modifySip, setModifySip] = useState(null);
@@ -287,25 +312,34 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
   }, [holdings]);
 
   const enriched = useMemo(() => {
-    return sips.map((s) => ({ sip: s, fund: fundById(s.id) })).filter((x) => x.fund);
+    return sips.map((s) => ({
+      sip: { ...s, planType: s.planType || "sip" },
+      fund: fundById(s.id),
+    })).filter((x) => x.fund);
   }, [sips, fundById]);
 
-  const activeSips = enriched.filter((x) => x.sip.status === "Active");
+  const byPlan = useMemo(() => {
+    if (planTab === "all") return enriched;
+    return enriched.filter((x) => x.sip.planType === planTab);
+  }, [enriched, planTab]);
+
+  const activeSips = byPlan.filter((x) => x.sip.status === "Active");
   const totalMonthly = activeSips.reduce((a, x) => a + x.sip.amount, 0);
   const nextDebit = activeSips.sort((a, b) => String(a.sip.nextDebit).localeCompare(String(b.sip.nextDebit)))[0]?.sip.nextDebit;
-  const hasFailed = enriched.some((x) => x.sip.status === "Failed");
+  const hasFailed = byPlan.some((x) => x.sip.status === "Failed" && x.sip.planType === "sip");
 
   const filtered = useMemo(() => {
-    let arr = [...enriched];
+    let arr = [...byPlan];
     if (q.trim()) {
       const k = q.toLowerCase();
-      arr = arr.filter((x) => x.fund.s.toLowerCase().includes(k) || x.fund.h.toLowerCase().includes(k));
+      arr = arr.filter((x) => x.fund.s.toLowerCase().includes(k) || x.fund.h.toLowerCase().includes(k)
+        || String(x.sip.targetName || "").toLowerCase().includes(k));
     }
     if (filter === "active") arr = arr.filter((x) => x.sip.status === "Active");
     else if (filter === "paused") arr = arr.filter((x) => x.sip.status === "Paused");
     else if (filter === "failed") arr = arr.filter((x) => x.sip.status === "Failed");
     return arr;
-  }, [enriched, q, filter]);
+  }, [byPlan, q, filter]);
 
   const upcoming = useMemo(() => {
     return [...activeSips]
@@ -313,12 +347,12 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
       .slice(0, 5)
       .map((x) => ({
         date: x.sip.nextDebit,
-        label: `${x.fund.h} · ${inr0(x.sip.amount)}`,
-        day: x.sip.day,
+        label: `${planLabel(x.sip.planType)} · ${x.fund.h} · ${inr0(x.sip.amount)}`,
+        day: `${x.sip.planType}-${x.sip.day}-${x.sip.id}`,
       }));
   }, [activeSips]);
 
-  const sipKey = (s) => s.sipKey ?? `${s.id}-${s.day}`;
+  const sipKey = (s) => s.sipKey ?? `${s.planType || "sip"}-${s.id}-${s.day}-${s.targetSchemeCode || ""}`;
 
   const updateSip = useCallback((target, patch) => {
     setSips((prev) => prev.map((s) => (sipKey(s) === sipKey(target) ? { ...s, ...patch } : s)));
@@ -326,22 +360,25 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
 
   const handlePause = () => {
     if (!manageSip) return;
+    const label = planLabel(manageSip.planType || "sip");
     updateSip(manageSip, { status: "Paused", nextDebit: "—" });
-    toast("SIP paused — resumes when you unpause");
+    toast(`${label} paused — resumes when you unpause`);
     setManageSip(null);
   };
 
   const handleCancel = () => {
     if (!manageSip) return;
+    const label = planLabel(manageSip.planType || "sip");
     setSips((prev) => prev.filter((s) => sipKey(s) !== sipKey(manageSip)));
-    toast("SIP cancelled");
+    toast(`${label} cancelled`);
     setManageSip(null);
   };
 
   const handleModifyConfirm = (newAmount) => {
     if (!modifySip) return;
+    const label = planLabel(modifySip.planType || "sip");
     updateSip(modifySip, { amount: newAmount });
-    toast(`SIP amount updated to ${inr0(newAmount)}/month`);
+    toast(`${label} amount updated to ${inr0(newAmount)}/month`);
     setModifySip(null);
     setManageSip(null);
   };
@@ -365,10 +402,23 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
           onPortfolio={() => go("portfolio")}
         />
 
+        <div className="sip-plan-tabs">
+          {[
+            { k: "all", t: "All" },
+            { k: "sip", t: "SIP" },
+            { k: "stp", t: "STP" },
+            { k: "swp", t: "SWP" },
+          ].map((t) => (
+            <button key={t.k} type="button" className={planTab === t.k ? "on" : ""} onClick={() => setPlanTab(t.k)}>
+              {t.t}
+            </button>
+          ))}
+        </div>
+
         {hasFailed && !bounceDismissed && (
           <MandateBounceBanner
             onFix={() => {
-              const f = enriched.find((x) => x.sip.status === "Failed");
+              const f = enriched.find((x) => x.sip.status === "Failed" && x.sip.planType === "sip");
               if (f) setFailSip(f.sip);
             }}
             onDismiss={() => setBounceDismissed(true)}
@@ -378,7 +428,7 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
         <div className="sip-toolbar">
           <div className="discover-search" style={{ marginBottom: 0, flex: 1 }}>
             <Search size={18} color="var(--faint)"/>
-            <input placeholder="Search SIPs" value={q} onChange={(e) => setQ(e.target.value)}/>
+            <input placeholder="Search plans" value={q} onChange={(e) => setQ(e.target.value)}/>
           </div>
           <button type="button" className="discover-filter-btn" onClick={filterCycle}>
             <SlidersHorizontal size={15}/> {filterLabel}
@@ -386,11 +436,17 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
         </div>
 
         <div className="sip-list">
+          {filtered.length === 0 && (
+            <p style={{ fontSize: 13, fontWeight: 600, color: "var(--muted)", padding: "12px 4px" }}>
+              No {planTab === "all" ? "systematic plans" : planLabel(planTab) + "s"} yet. Open a holding to register Switch / STP / SWP.
+            </p>
+          )}
           {filtered.map(({ sip, fund }) => (
             <SipCard
               key={sipKey(sip)}
               sip={sip}
               fund={fund}
+              fundById={fundById}
               onManage={setManageSip}
               onFixMandate={setFailSip}
             />
@@ -421,7 +477,7 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
             <ChevronRight size={14} style={{ transform: "rotate(90deg)", flex: "none" }}/>
           </summary>
           <div className="body">
-            SIP amounts and dates are factual order data. Past performance does not guarantee future results.
+            SIP / STP / SWP amounts and dates are factual order data. Past performance does not guarantee future results.
           </div>
         </details>
       </div>
@@ -435,6 +491,7 @@ export default function SipsScreen({ sips, setSips, holdings, fundById, go, toas
         <ManageSipSheet
           sip={manageSip}
           fund={fundById(manageSip.id)}
+          fundById={fundById}
           onClose={() => setManageSip(null)}
           onPause={handlePause}
           onModify={() => setModifySip(manageSip)}

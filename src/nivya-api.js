@@ -1,3 +1,10 @@
+import {
+  buildCategoryPeerMedians,
+  buildHoldingPulse,
+  buildRelatedNews,
+  PORTFOLIO_CONTEXT_COPY,
+} from "./portfolio-context.js";
+
 const API_BASE = "/v1";
 
 let accessToken = null;
@@ -59,6 +66,7 @@ export function mapSip(s) {
     pending_mandate: "Pending mandate",
   };
   const raw = String(s.status ?? "active").toLowerCase();
+  const planType = String(s.planType ?? s.type ?? "sip").toLowerCase();
   return {
     id: s.schemeCode,
     sipKey: s.id,
@@ -69,6 +77,9 @@ export function mapSip(s) {
     bankAccount: s.bankAccount,
     failReason: s.failReason,
     retryDate: s.retryDate,
+    planType: planType === "stp" || planType === "swp" ? planType : "sip",
+    targetSchemeCode: s.targetSchemeCode || null,
+    targetName: s.targetSchemeName || s.targetName || null,
   };
 }
 
@@ -133,6 +144,14 @@ export async function submitSip(payload) {
   return request("/sips", { method: "POST", body: payload });
 }
 
+export async function submitStp(payload) {
+  return request("/stps", { method: "POST", body: payload });
+}
+
+export async function submitSwp(payload) {
+  return request("/swps", { method: "POST", body: payload });
+}
+
 export async function fetchPortfolio() {
   return request("/portfolio");
 }
@@ -142,7 +161,7 @@ const PAST_PERF_NOTE =
   "This is not your personal XIRR or portfolio return. Past performance does not guarantee future results.";
 
 /** Client-side portfolio facts — mirrors BFF `insights` for offline demo. */
-export function buildPortfolioInsights(holdings, fundById, navs) {
+export function buildPortfolioInsights(holdings, fundById, navs, allFunds) {
   const rows = holdings
     .map((h) => {
       const f = fundById(h.id);
@@ -204,6 +223,17 @@ export function buildPortfolioInsights(holdings, fundById, navs) {
     });
   }
 
+  const peerUniverse = Array.isArray(allFunds) && allFunds.length
+    ? allFunds
+    : rows.map((r) => ({ cat: r.category, r3: r.pastReturn3y }));
+  const peerMedians = buildCategoryPeerMedians(peerUniverse);
+  const holdingPulse = buildHoldingPulse(
+    rows.map((r) => ({ ...r, weightPct: pctOf(r.currentValue) })),
+    peerMedians,
+    5,
+  );
+  const relatedNews = buildRelatedNews(rows);
+
   return {
     disclaimer:
       "Factual portfolio data and user-controlled illustrations only — not investment advice, " +
@@ -223,6 +253,11 @@ export function buildPortfolioInsights(holdings, fundById, navs) {
       holdingsWithPast3y: rows.filter((r) => r.pastReturn3y != null).length,
       holdingsTotal: rows.length,
     },
+    holdingPulse: {
+      items: holdingPulse,
+      note: PORTFOLIO_CONTEXT_COPY.peerNote,
+    },
+    relatedNews,
   };
 }
 

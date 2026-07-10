@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from "react";
 import {
   Eye, EyeOff, TrendingUp, TrendingDown, ChevronRight, Search, SlidersHorizontal,
-  Calculator, Download, Upload, AlertTriangle, ExternalLink, HelpCircle,
+  Calculator, Download, Upload, AlertTriangle, ExternalLink, HelpCircle, Newspaper,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -323,7 +323,7 @@ function HoldingsPanel({ rows, openFund }) {
   );
 }
 
-function InsightsPanel({ insights, rows, total, insightsView, setInsightsView }) {
+function InsightsPanel({ insights, rows, total, insightsView, setInsightsView, openFund }) {
   const weighted5y = useMemo(() => {
     let w = 0, cover = 0;
     for (const r of rows) {
@@ -351,6 +351,8 @@ function InsightsPanel({ insights, rows, total, insightsView, setInsightsView })
   ];
 
   const displayFlags = insightsView === "key" ? keyFlags : allFlags;
+  const pulseItems = insights.holdingPulse?.items ?? [];
+  const newsItems = insights.relatedNews?.items ?? [];
 
   return (
     <div>
@@ -375,6 +377,41 @@ function InsightsPanel({ insights, rows, total, insightsView, setInsightsView })
         <p className="pf-insight-note">{insights.pastPerformance.note}</p>
       </div>
 
+      {pulseItems.length > 0 && (
+        <div className="pf-section-card">
+          <div className="pf-sec-head"><h3>Holding pulse (past peers)</h3></div>
+          <div className="pf-pulse-list">
+            {pulseItems.map((item) => {
+              const tone =
+                item.label === "ahead_of_peers_past" ? "ahead"
+                  : item.label === "trailing_peers_past" ? "trail"
+                    : "near";
+              return (
+                <button
+                  key={item.schemeCode}
+                  type="button"
+                  className="pf-pulse-row"
+                  onClick={() => { const hit = rows.find((r) => (r.f?.id === item.schemeCode) || (r.h?.id === item.schemeCode)); if (hit?.f) openFund?.(hit.f); }}
+                >
+                  <div className="pf-pulse-main">
+                    <b>{item.schemeName}</b>
+                    <span>{item.category}{item.weightPct != null ? ` · ${item.weightPct}% of portfolio` : ""}</span>
+                  </div>
+                  <div className="pf-pulse-metrics">
+                    <div className="pf-pulse-nums">
+                      <span><em>Fund 3Y</em> <b className="num">{item.pastReturn3y != null ? `${item.pastReturn3y}%` : "—"}</b></span>
+                      <span><em>Cat. median</em> <b className="num">{item.categoryMedian3y != null ? `${item.categoryMedian3y}%` : "—"}</b></span>
+                    </div>
+                    <span className={`pf-pulse-chip ${tone}`}>{item.labelText}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <p className="pf-insight-note">{insights.holdingPulse?.note}</p>
+        </div>
+      )}
+
       {displayFlags.length > 0 && (
         <div className="pf-section-card">
           <div className="pf-sec-head"><h3>Concentration check</h3></div>
@@ -398,8 +435,33 @@ function InsightsPanel({ insights, rows, total, insightsView, setInsightsView })
         </div>
       )}
 
+      {newsItems.length > 0 && (
+        <div className="pf-section-card">
+          <div className="pf-sec-head">
+            <h3>Related context</h3>
+            <span className="pf-sec-tag">Demo headlines</span>
+          </div>
+          <div className="pf-news-list">
+            {newsItems.map((n) => (
+              <div key={n.id} className="pf-news-card">
+                <div className="pf-news-ic"><Newspaper size={16} /></div>
+                <div className="pf-news-body">
+                  <b>{n.headline}</b>
+                  <span className="pf-news-meta">{n.source} · {n.publishedAt}</span>
+                  <span className="pf-news-match">
+                    Linked to: {n.matchedHoldings.map((h) => h.schemeName).slice(0, 2).join(", ")}
+                    {n.matchedHoldings.length > 2 ? ` +${n.matchedHoldings.length - 2}` : ""}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="pf-insight-note">{insights.relatedNews?.note}</p>
+        </div>
+      )}
+
       <p className="pf-compliant-foot">
-        Insights are factual portfolio statistics — not financial advice or a recommendation to rebalance.
+        Insights are factual portfolio statistics and informational context — not financial advice or a recommendation to rebalance.
       </p>
     </div>
   );
@@ -408,7 +470,7 @@ function InsightsPanel({ insights, rows, total, insightsView, setInsightsView })
 /**
  * @param {{ navs, holdings, sips, openFund, fundById, toast }} props
  */
-export default function PortfolioScreen({ navs, holdings, sips, openFund, fundById, toast }) {
+export default function PortfolioScreen({ navs, holdings, sips, openFund, fundById, funds, toast }) {
   const [segment, setSegment] = useState("overview");
   const [balVis, setBalVis] = useState(true);
   const [chartTf, setChartTf] = useState("1Y");
@@ -427,7 +489,7 @@ export default function PortfolioScreen({ navs, holdings, sips, openFund, fundBy
       const pnl = value - cost;
       return { h, f, q, value, cost, pnl, pnlPct: cost ? pnl / cost : 0 };
     }).filter(Boolean).sort((a, b) => b.value - a.value);
-    const insights = buildPortfolioInsights(holdings, fundById, navs);
+    const insights = buildPortfolioInsights(holdings, fundById, navs, funds);
     const total = pf.cur || 1;
     const assetMap = new Map();
     for (const r of rows) {
@@ -438,7 +500,7 @@ export default function PortfolioScreen({ navs, holdings, sips, openFund, fundBy
       .map(([label, valueInr]) => ({ label, valueInr, weightPct: Math.round((valueInr / total) * 1000) / 10 }))
       .sort((a, b) => b.valueInr - a.valueInr);
     return { pf, rows, insights, total, assetRows };
-  }, [holdings, navs, fundById]);
+  }, [holdings, navs, fundById, funds]);
 
   return (
     <div className="scroll pf-scroll">
@@ -486,6 +548,7 @@ export default function PortfolioScreen({ navs, holdings, sips, openFund, fundBy
           total={data.total}
           insightsView={insightsView}
           setInsightsView={setInsightsView}
+          openFund={openFund}
         />
       )}
     </div>

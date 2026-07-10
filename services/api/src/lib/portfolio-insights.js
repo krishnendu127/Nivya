@@ -1,3 +1,10 @@
+import {
+  buildCategoryPeerMedians,
+  buildHoldingPulse,
+  buildRelatedNews,
+  PORTFOLIO_CONTEXT_COPY,
+} from "./portfolio-context.js";
+
 const PAST_PERF_NOTE =
   "Weighted average of each fund's published past CAGR, by your current market value. " +
   "This is not your personal XIRR or portfolio return. Past performance does not guarantee future results.";
@@ -82,8 +89,9 @@ function buildConcentrationFlags(rows, total, byAmc) {
 /**
  * @param {Array<{ schemeCode: string, schemeName?: string, currentValue: number }>} holdings
  * @param {(code: string) => Promise<object|null>|object|null} resolveScheme
+ * @param {Array<object>} [peerFunds] optional catalog for category medians
  */
-export async function buildPortfolioInsights(holdings, resolveScheme) {
+export async function buildPortfolioInsights(holdings, resolveScheme, peerFunds) {
   const rows = [];
   for (const h of holdings) {
     const scheme = await resolveScheme(h.schemeCode);
@@ -114,6 +122,8 @@ export async function buildPortfolioInsights(holdings, resolveScheme) {
         holdingsWithPast3y: 0,
         holdingsTotal: 0,
       },
+      holdingPulse: { items: [], note: PORTFOLIO_CONTEXT_COPY.peerNote },
+      relatedNews: { items: [], note: PORTFOLIO_CONTEXT_COPY.newsDisclaimer },
     };
   }
 
@@ -128,6 +138,17 @@ export async function buildPortfolioInsights(holdings, resolveScheme) {
 
   const holdingsWithPast1y = rows.filter((r) => r.pastReturn1y != null).length;
   const holdingsWithPast3y = rows.filter((r) => r.pastReturn3y != null).length;
+
+  const peerUniverse = Array.isArray(peerFunds) && peerFunds.length
+    ? peerFunds
+    : rows.map((r) => ({ category: r.category, pastReturn3y: r.pastReturn3y }));
+  const peerMedians = buildCategoryPeerMedians(peerUniverse);
+  const holdingPulse = buildHoldingPulse(
+    rows.map((r) => ({ ...r, weightPct: pctOf(r.currentValue, total) })),
+    peerMedians,
+    5,
+  );
+  const relatedNews = buildRelatedNews(rows);
 
   return {
     disclaimer: INSIGHTS_DISCLAIMER,
@@ -146,6 +167,11 @@ export async function buildPortfolioInsights(holdings, resolveScheme) {
       holdingsWithPast3y,
       holdingsTotal: rows.length,
     },
+    holdingPulse: {
+      items: holdingPulse,
+      note: PORTFOLIO_CONTEXT_COPY.peerNote,
+    },
+    relatedNews,
   };
 }
 

@@ -38,6 +38,8 @@
  * @property {(schemeCode: string) => Promise<Scheme|null>} getScheme
  * @property {(req: VendorOrderRequest) => Promise<VendorOrderResult>} submitOrder
  * @property {(params: { schemeCode: string, amount: number, debitDay: number, arn: string, euin: string, investorRef: string }) => Promise<{ vendorRef: string, status: string }>} registerSip
+ * @property {(params: { schemeCode: string, targetSchemeCode: string, amount: number, debitDay: number, arn: string, euin: string, investorRef: string }) => Promise<{ vendorRef: string, status: string }>} registerStp
+ * @property {(params: { schemeCode: string, amount: number, debitDay: number, arn: string, euin: string, investorRef: string }) => Promise<{ vendorRef: string, status: string }>} registerSwp
  */
 
 export {};
