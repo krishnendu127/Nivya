@@ -117,7 +117,7 @@ const CSS = `
 .home-qa-btn .s{font-size:9.5px;font-weight:600;color:var(--muted);text-align:center;line-height:1.25;}
 .alert-scroll{display:flex;gap:10px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;}
 .alert-scroll::-webkit-scrollbar{display:none;}
-.alert-card{flex:0 0 auto;width:min(88%,300px);border-radius:16px;padding:12px 13px;cursor:pointer;border:1px solid;}
+.alert-card{flex:0 0 auto;width:calc((100% - 10px) / 2);border-radius:16px;padding:12px 13px;cursor:pointer;border:1px solid;text-align:left;box-sizing:border-box;}
 .alert-card:active{transform:scale(.99);}
 .alert-card.teal{background:#EAF7F3;border-color:#CDEDE3;}
 .alert-card.amber{background:#FFF8E6;border-color:#F5DFA8;}

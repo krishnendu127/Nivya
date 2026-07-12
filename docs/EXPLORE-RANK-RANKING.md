@@ -1,6 +1,6 @@
 # Explore → Rank: Preferences, Mechanism & Scoring
 
-This document describes **exactly** how fund ranking works under **Discover → Rank** in Nivya, as implemented in the repository. All formulas and field mappings are taken from source code — not assumed.
+This document describes **exactly** how fund ranking works under **Explore → Rank** in Nivya, as implemented in the repository. All formulas and field mappings are taken from source code — not assumed.
 
 **Primary source files:**
 
@@ -10,32 +10,39 @@ This document describes **exactly** how fund ranking works under **Discover → 
 | Preferences → API payload | `src/discover-preferences.js` |
 | API client | `src/nivya-api.js` |
 | BFF route | `services/api/src/routes/screener.js` |
-| Ranking engine | `packages/screener-core/src/index.js` |
+| Snapshot load + TER overlay | `services/api/src/lib/snapshot-store.js` |
+| Ranking orchestration | `packages/screener-core/src/index.js` |
+| Dynamic weights | `packages/screener-core/src/weights.js` |
+| Component scorers | `packages/screener-core/src/scorers.js` |
 | Snapshot data build | `services/screener-worker/build-snapshot.js` |
 | Snapshot data | `data/screener_snapshot.json` |
-| Unit tests | `packages/screener-core/src/__tests__/ranking.test.js` |
+| Expense / AUM overlay | `data/scheme_meta_overlay.json` |
+| Unit tests | `packages/screener-core/src/__tests__/ranking.test.js`, `weights.test.js` |
+
+**Phase A (preference-aware ranking) is live:** Discover Rank always sends `buckets[].ranking` from Investment DNA. Missing `ranking` on the API → exact legacy weights `60/20/20` (riskFit=0, amc=0).
 
 ---
 
 ## 1. End-to-end flow
 
 ```
-User (Discover → Rank tab)
+User (Explore → Rank tab)
   │
   ├─ Guided wizard OR saved Investment DNA (localStorage)
   │
   ├─ buildScreenerPayload(prefs)          [discover-preferences.js]
-  │     → { mode, horizonMonths, buckets[], prefs }
+  │     → { mode, horizonMonths, buckets[{ riskPreference, categories, amountInr, ranking }] }
   │
   ├─ queryScreener(payload)               [nivya-api.js]
-  │     → POST /v1/screener/query
+  │     → POST /v1/screener/query  (forwards ranking on each bucket)
   │
   ├─ screenerRoutes POST /query           [services/api/src/routes/screener.js]
   │     → loadSnapshotRaw() from data/screener_snapshot.json
+  │       (+ scheme_meta_overlay / category TER estimates)
   │     → buildMultiBucketResponse(buckets, schemes)
   │
   └─ rankSchemes() per bucket             [packages/screener-core/src/index.js]
-        → filter pool → scoreScheme() per fund → sort by performanceScore → top K
+        → filter pool → resolveWeights() → scoreScheme() → sort by performanceScore → top K
 ```
 
 **UI entry point:** `RankPanel.runRank()` in `src/DiscoverScreen.jsx` calls `buildScreenerPayload(prefs)` then `queryScreener(payload)`.
@@ -64,6 +71,9 @@ Preferences are stored in `localStorage` under key `nivya-investment-dna` (`DNA_
 | `fundStyle` | `"both"` |
 | `expensePriority` | `"balanced"` |
 | `consistencyPref` | `"stable"` |
+| `returnWindow` | `"3y"` |
+| `preferredAmcs` | `[]` |
+| `avoidedAmcs` | `[]` |
 | `experience` | `"some"` |
 | `completedWizard` | `false` |
 
@@ -100,7 +110,7 @@ Emergency goals restrict horizon options to `lt1` and `1-3` only (`EMERGENCY_HOR
 
 **Frequency (`FREQUENCY_OPTIONS`):** `once` → `LUMPSUM`, `monthly` / `quarterly` → `SIP`
 
-**Refine step options:** `FIRST_MF_OPTIONS`, `EXISTING_INVESTMENTS`, `FUND_STYLE_OPTIONS`, `CONSISTENCY_PREF`, `EXPENSE_PRIORITY`, `EXPERIENCE_LEVEL`
+**Refine step options:** `FIRST_MF_OPTIONS`, `EXISTING_INVESTMENTS`, `FUND_STYLE_OPTIONS`, `CONSISTENCY_PREF`, `EXPENSE_PRIORITY`, `EXPERIENCE_LEVEL`, AMC chips (`AMC_CHIP_OPTIONS`)
 
 ### 2.4 Quick-start combos (`applyPopularCombo`)
 
@@ -125,13 +135,24 @@ Emergency goals restrict horizon options to `lt1` and `1-3` only (`EMERGENCY_HOR
     "id": 1,
     "riskPreference": "LOW" | "MEDIUM" | "HIGH",
     "categories": ["large-cap", ...],
-    "amountInr": <prefs.amount>
+    "amountInr": <prefs.amount>,
+    "ranking": {
+      "expensePriority": "balanced" | "low-cost" | "performance",
+      "consistencyPref": "stable" | "volatile",
+      "returnWindow": "1y" | "3y" | "5y",
+      "preferredAmcs": [],
+      "avoidedAmcs": [],
+      "horizonMonths": <number>,
+      "safetyGrowth": <0–100>
+    }
   }],
   "prefs": <full prefs object for UI explainability>
 }
 ```
 
-`queryScreener()` strips the payload to `{ mode, horizonMonths, buckets: [{ riskPreference, categories, amountInr, topK }] }` before POST.
+`ranking` is built by `buildRankingPrefs(prefs)` in `discover-preferences.js`.
+
+`queryScreener()` strips the payload to `{ mode, horizonMonths, buckets: [{ riskPreference, categories, amountInr, topK, ranking }] }` before POST (forwards `ranking` when present).
 
 ### 3.1 Risk preference derivation (`deriveRiskPreference`)
 
@@ -174,22 +195,26 @@ Rules are evaluated in order:
 | `safetyGrowth < 30` | `["flexi-cap", "small-cap", "mid-cap"]` |
 | default | `["flexi-cap", "large-cap"]` |
 
-These categories are sent in the API bucket **before** risk-band intersection (see §4.2).
+These categories are sent in the API bucket **before** risk-band intersection (see §4.1).
 
-### 3.3 Fields that do **not** change the ranking engine
+### 3.3 What affects ranking math vs what does not
 
-The following are collected in the wizard but **are not read** by `rankSchemes()` or `scoreScheme()`:
+| Field / input | Effect |
+|---------------|--------|
+| `riskPreference` | Category band + weight tilt (`LOW` raises `riskFit`; `HIGH` raises `returns`) |
+| `categories` | Pool filter (intersected with risk-band defaults) |
+| `ranking.expensePriority` | Weight tilt (`low-cost` / `performance`) |
+| `ranking.consistencyPref` | Weight tilt only when `"volatile"` (default `"stable"` keeps legacy unless other tilts fire) |
+| `ranking.returnWindow` | Which return field is percentile-ranked (`pastReturn1y` / `3y` / `5y`) |
+| `ranking.horizonMonths` | Soft tilt when `< 24` (more consistency / riskFit, less returns) |
+| `ranking.safetyGrowth` | Soft tilt when `≥ 70` or `≤ 30` |
+| `ranking.preferredAmcs` | Soft AMC weight + preferred score boost |
+| `ranking.avoidedAmcs` | **Hard exclude** from pool (+ score 0 if somehow scored) |
+| `mode` (SIP/LUMPSUM) | Echoed on response — **not** used in scoring |
+| `amountInr` | Echoed — **not** used in scoring |
+| `firstMf`, `existingInvestments`, `hasElss`, `experience` | DNA / UI only — **not** read by `rankSchemes` / `scoreScheme` |
 
-| Field | Actual use today |
-|-------|------------------|
-| `horizonMonths` | Soft weight tilt when `ranking` present (short → consistency/riskFit; long → returns) |
-| `mode` (SIP/LUMPSUM) | Echoed; **not** used in scoring |
-| `amountInr` | Echoed; **not** used in scoring |
-| `expensePriority` | **Affects weights** when `ranking` sent (`low-cost` / `performance`) |
-| `consistencyPref` | **Affects weights** when `ranking` sent |
-| `returnWindow` | Chooses 1Y / 3Y / 5Y return field |
-| `preferredAmcs` / `avoidedAmcs` | Soft boost / hard exclude |
-| `firstMf`, `existingInvestments`, `hasElss` | Still not ranking math |
+**Default DNA nuance:** Discover always sends `ranking`, but `resolveWeights` returns exact legacy `0.6 / 0.2 / 0.2` (riskFit=0, amc=0) when no tilt triggers — typical defaults (`balanced`, `stable`, MEDIUM risk, safety 50, horizon ≥ 24, empty AMC lists) stay on legacy weights. Intentional refine choices move ranks.
 
 ---
 
@@ -201,6 +226,7 @@ rankSchemes(schemes, {
   categories = [],
   topK = parseInt(process.env.SCREENER_TOP_K || "10", 10),
   minAumCr = 100,
+  ranking = null,
 })
 ```
 
@@ -230,7 +256,8 @@ A scheme is included only if **all** of:
 1. **Regular plans only:** `schemeName` does **not** contain `"direct"` (case-insensitive).
 2. **Category:** `scheme.category` is in the eligible category list from §4.1.
 3. **AUM floor:** if `scheme.aum != null`, it must be `>= minAumCr` (default **100** crore).  
-   - Current MFapi snapshot often has `aum: null` → this filter is **skipped** for those schemes.
+   - Current MFapi snapshot often has `aum: null` until overlay fill → this filter is **skipped** when AUM is null.
+4. **Avoided AMCs:** if `ranking.avoidedAmcs` is set, schemes whose AMC matches (substring / first-token match) are excluded.
 
 If the pool is empty after filtering, `rankSchemes` returns `[]`.
 
@@ -244,22 +271,25 @@ Within the pool, schemes are grouped by `category`. Each scheme is scored agains
 2. Return `scored.slice(0, topK)` — default **top 10** (`SCREENER_TOP_K` env or `10`).
 3. UI rank number = position in returned list (1-based).
 
+Sort order uses **`performanceScore` only**. `riskScore` is returned for display; volatility also contributes to score when `riskFit` weight &gt; 0.
+
 ---
 
 ## 5. Scoring a single fund (`scoreScheme`)
 
-All scoring is **rule-based percentile ranking within category peers**. No ML (see file header in `screener-core`).
+All scoring is **rule-based percentile ranking within category peers** (Phase A). Modular scorers live in `packages/screener-core/src/scorers.js`; weights in `weights.js`.
 
-### 5.1 Inputs per scheme (from snapshot)
+### 5.1 Inputs per scheme (from snapshot + overlay)
 
 | Field | Source | Notes |
 |-------|--------|-------|
-| `pastReturn1y` | NAV CAGR over ~1Y | From snapshot build |
-| `pastReturn3y` | NAV CAGR over ~3Y | Primary performance input |
-| `pastReturn5y` | NAV CAGR over ~5Y | Display only in scoring path |
-| `volatilityPct` | Annualised log-return std × √252 | Last ~252 trading days in snapshot build |
-| `expenseRatio` | — | Often `null` in live MFapi snapshot |
-| `aum` | — | Often `null` in live MFapi snapshot |
+| `pastReturn1y` | NAV CAGR ~1Y | Used for consistency gap always; also return scorer if `returnWindow === "1y"` |
+| `pastReturn3y` | NAV CAGR ~3Y | Default return window |
+| `pastReturn5y` | NAV CAGR ~5Y | Used when `returnWindow === "5y"` |
+| `volatilityPct` | Annualised log-return std × √252 | Feeds `riskFit` score and `riskScore` |
+| `expenseRatio` | Snapshot / overlay / category estimate | Often null from MFapi alone |
+| `aum` | Snapshot / overlay | Often null from MFapi alone |
+| `amc` | Snapshot | Preferred / avoided matching |
 
 ### 5.2 Percentile rank helper (`pctRank`)
 
@@ -271,47 +301,72 @@ function pctRank(value, arr, ascending = true) {
 }
 ```
 
-- `ascending: true` → higher raw value → higher percentile (used for returns, volatility in risk score).
-- `ascending: false` → lower raw value → higher percentile (used for expense ratio, consistency gap).
+- `ascending: true` → higher raw value → higher percentile (returns; raw vol for `riskScore`).
+- `ascending: false` → lower raw value → higher percentile (expense; |1Y−3Y| consistency gap).
 
-Missing values for a metric default that component to **50** (neutral).
+Missing values for a metric default that component score to **50** (neutral).
 
-### 5.3 Component percentiles
+### 5.3 Component scores
 
 Computed across `[scheme, ...peers]` in the same category:
 
-| Component | Raw metric | `pctRank` direction | Weight in `performanceScore` |
-|-----------|------------|---------------------|------------------------------|
-| `r3Pct` | `pastReturn3y` | ascending (higher return = better) | **60%** |
-| `consistencyPct` | `\|pastReturn1y - pastReturn3y\|` | **descending** (smaller gap = better) | **20%** |
-| `expPct` | `expenseRatio` | descending (lower expense = better) | **20%** |
+| Component | Raw metric | Direction | Weight key |
+|-----------|------------|-----------|------------|
+| Returns | `pastReturn{1y\|3y\|5y}` from `returnWindow` | higher better | `returns` |
+| Consistency | `\|pastReturn1y − pastReturn3y\|` | smaller gap better | `consistency` |
+| Expense | `expenseRatio` | lower better | `expense` |
+| Risk fit | `100 − volPercentile` | lower vol → higher score | `riskFit` |
+| AMC | preferred → 100, neutral → 50, avoided → 0 | — | `amc` |
 
-**Formulas:**
+**`riskScore` (API / UI):** vol percentile ascending (`0–100`), separate from the `riskFit` component used in the weighted sum.
+
+### 5.4 Weights (`resolveWeights`)
+
+**If `ranking == null`:**
 
 ```
-gap = |pastReturn1y - pastReturn3y|   (0 if either missing)
-
-performanceScore = round(r3Pct * 0.6 + consistencyPct * 0.2 + expPct * 0.2)
-performanceScore = clamp(0, 100, performanceScore)
-
-riskScore = volPct   (percentile of volatility within category, ascending)
-riskScore = clamp(0, 100, riskScore)
+returns 0.6 · consistency 0.2 · expense 0.2 · riskFit 0 · amc 0
+returnWindow forced to "3y"
 ```
 
-**Important:** Sort order uses **`performanceScore` only**. `riskScore` is computed and returned but **does not** affect rank position in v1.
+**If `ranking` present:** start from those defaults, then apply tilts (then L1-normalize if any tilt fired):
 
-When `expenseRatio` is `null` for all peers (common in current snapshot), `expPct = 50` for everyone → the 20% expense component is effectively neutral.
+| Trigger | Effect (pre-normalize) |
+|---------|------------------------|
+| `expensePriority === "low-cost"` | expense +0.15, returns −0.1, consistency −0.05 |
+| `expensePriority === "performance"` | returns +0.1, expense −0.1 |
+| `consistencyPref === "volatile"` | returns +0.08, consistency −0.05 |
+| `riskPreference === "LOW"` | riskFit +0.15, returns −0.1, consistency +0.05 |
+| `riskPreference === "HIGH"` | returns +0.08 |
+| `safetyGrowth >= 70` | riskFit +0.08, returns −0.05 |
+| `safetyGrowth <= 30` | returns +0.05, riskFit −0.05 (floored at 0) |
+| `horizonMonths < 24` | consistency +0.05, riskFit +0.05, returns −0.05 |
+| `preferredAmcs.length > 0` | amc = 0.08; returns/expense/consistency each trimmed |
 
-### 5.4 Explainability reasons (`reasons[]`)
+If **no** tilt trigger fires → return exact `DEFAULT_WEIGHTS` (still honouring `returnWindow` from ranking).
 
-Factual, template-based tags attached to each scored fund (used in API and partially in UI):
+### 5.5 Aggregate formula
+
+```
+performanceScore = clamp(0, 100, round(Σ weight_i × componentScore_i))
+```
+
+Weights come from `resolveWeights({ riskPreference, ranking })`. Components from `scoreReturns`, `scoreConsistency`, `scoreExpense`, `scoreRiskFit`, `scoreAmc`.
+
+Each scored item also includes `scoreBreakdown: { weights, returnWindow, components }` on the API response.
+
+### 5.6 Explainability reasons (`reasons[]`)
+
+Factual, template-based tags attached to each scored fund:
 
 | Code | Condition | Example text |
 |------|-----------|--------------|
-| `HIGH_3Y_RETURN_IN_CATEGORY` | `pastReturn3y > category median 3Y` | `Past 3Y CAGR (X%) is above category median` |
-| `LOWER_VOL_THAN_MEDIAN` | `volatilityPct < category median vol` | `Historical annualised volatility (X%) is below category median` |
-| `HIGH_AUM` | `aum > 30000` (₹300 Cr in code’s unit) | `Large AUM (₹Xk Cr) signals liquidity depth` |
-| `LOW_EXPENSE_RATIO` | `expenseRatio < category median expense` | `Expense ratio (X%) is below category median` |
+| `HIGH_3Y_RETURN_IN_CATEGORY` (or `HIGH_1Y_` / `HIGH_5Y_`) | return for active window &gt; category median | `Past 3Y CAGR (X%) is above category median` |
+| `LOWER_VOL_THAN_MEDIAN` | `volatilityPct` &lt; category median vol | `Historical annualised volatility (X%) is below category median` |
+| `LOW_EXPENSE_RATIO` | `expenseRatio` &lt; category median expense | `Expense ratio (X%) is below category median` |
+| `AMC_PREFERRED` | AMC matches preferred list | `AMC matches a preferred preference (…) ` |
+| `AMC_AVOIDED` | AMC matches avoided list | `AMC matches an avoided preference (…) ` |
+| `HIGH_AUM` | `aum > 30000` | `Large AUM (₹Xk Cr) signals liquidity depth` |
 
 `planType` is always set to `"Regular"` on scored output.
 
@@ -330,12 +385,22 @@ Worker: `services/screener-worker/build-snapshot.js`
 - Computes:
   - `pastReturn1y/3y/5y` via CAGR from NAV at 1/3/5 years ago
   - `volatilityPct` from last 252 NAV points
-- `expenseRatio` and `aum` are **`null`** in MFapi path (not ingested yet).
+- `expenseRatio` and `aum` are often **`null`** in the MFapi path (not ingested yet).
 - Fallback: `@nivya/vendor-mf` mock data with synthetic expense/AUM.
 
 Output: `data/screener_snapshot.json` — loaded by BFF on each `/screener/query` (not live MFapi per request).
 
-### 6.2 `computeMetrics(navSeries)` (library utility)
+### 6.2 TER / AUM fill at query time (`snapshot-store.js`)
+
+When loading snapshot schemes for ranking:
+
+1. Prefer values already on the snapshot row.
+2. Else apply `data/scheme_meta_overlay.json` (per-scheme expense / AUM).
+3. Else for expense only: category estimate map (`CATEGORY_EXPENSE_ESTIMATE`) — **not** official SID TER.
+
+`expenseSource` may be `snapshot` | `overlay` | `category-estimate`.
+
+### 6.3 `computeMetrics(navSeries)` (library utility)
 
 Pure function for NAV series → `{ cagr1y, cagr3y, cagr5y, volatilityPct, maxDrawdownPct }`. Used in tests and available for `/screener/metrics/:schemeCode`; snapshot build uses its own inline CAGR/vol helpers.
 
@@ -345,7 +410,7 @@ Pure function for NAV series → `{ cagr1y, cagr3y, cagr5y, volatilityPct, maxDr
 
 ### `POST /v1/screener/query`
 
-**Request body:**
+**Request body (Discover Rank shape):**
 
 ```json
 {
@@ -355,13 +420,23 @@ Pure function for NAV series → `{ cagr1y, cagr3y, cagr5y, volatilityPct, maxDr
     "riskPreference": "MEDIUM",
     "categories": ["flexi-cap", "large-cap"],
     "amountInr": 5000,
-    "topK": 10
+    "topK": 10,
+    "ranking": {
+      "expensePriority": "balanced",
+      "consistencyPref": "stable",
+      "returnWindow": "3y",
+      "preferredAmcs": [],
+      "avoidedAmcs": [],
+      "horizonMonths": 84,
+      "safetyGrowth": 50
+    }
   }]
 }
 ```
 
 - `buckets`: 1–5 items (Rank UI sends **1** bucket).
-- `STP` / `SWP`: stub response with empty buckets (not ranked in v1).
+- `ranking` is optional in the schema; absent → legacy weights.
+- `STP` / `SWP`: stub response with empty buckets (not ranked in this endpoint).
 
 **Response (per bucket):**
 
@@ -376,12 +451,13 @@ Pure function for NAV series → `{ cagr1y, cagr3y, cagr5y, volatilityPct, maxDr
     "riskPreference": "MEDIUM",
     "categories": ["flexi-cap", "large-cap"],
     "amountInr": 5000,
+    "ranking": { "...": "echo or null" },
     "items": [ /* ranked schemes */ ]
   }]
 }
 ```
 
-Each `item` includes: `schemeCode`, `schemeName`, `amc`, `category`, `planType`, `riskometer`, `aum`, `expenseRatio`, `nav`, `pastReturn1y/3y/5y`, `volatilityPct`, `performanceScore`, `riskScore`, `reasons[]`, `dataAsOn`.
+Each `item` includes: `schemeCode`, `schemeName`, `amc`, `category`, `planType`, `riskometer`, `aum`, `expenseRatio`, `nav`, `pastReturn1y/3y/5y`, `volatilityPct`, `performanceScore`, `riskScore`, `reasons[]`, `scoreBreakdown`, `dataAsOn`.
 
 ### Other endpoints
 
@@ -390,6 +466,7 @@ Each `item` includes: `schemeCode`, `schemeName`, `amc`, `category`, `planType`,
 | `GET /v1/screener/categories` | Lists `CATEGORIES` with `id`, `label`, `riskBand` |
 | `GET /v1/screener/status` | Snapshot metadata, scheme count, latest NAV date |
 | `GET /v1/screener/metrics/:schemeCode` | Single-scheme `scoreScheme()` vs category peers |
+| `POST /v1/screener/chat` | Fund Q&A over ranked / mentioned funds (separate from ranking math) |
 
 ---
 
@@ -437,7 +514,7 @@ If the API is unreachable, `RankPanel` shows an error (*“Run npm run start:api
 `queryScreenerOffline()` in `nivya-api.js` uses `clientSideRank()` on a **10-scheme mock list** with a **simplified** score:
 
 ```
-performanceScore ≈ percentile of pastReturn3y only (no consistency/expense components)
+performanceScore ≈ percentile of pastReturn3y only (no consistency/expense/riskFit/amc components)
 riskScore = 50 fixed
 ```
 
@@ -478,16 +555,16 @@ User-facing DNA summary maps a subset of ids to display labels (`buildDnaSummary
 
 ---
 
-## 12. Known limitations (v1) → Phase A updates
+## 12. Known limitations
 
-**Phase A (preference-aware screener) is live in code:** modular scorers, dynamic weights when `buckets[].ranking` is sent, AMC prefer/avoid, return window 1Y/3Y/5Y, riskFit in composite, expense overlay / category TER estimates.
-
-Still limited:
 1. MFapi TER/AUM often null — filled via `data/scheme_meta_overlay.json` or category estimates (not official SID TER).
 2. No holdings / theme / ESG scoring yet.
 3. Peer set = same category within filtered pool.
 4. Max ~200 schemes in snapshot build.
-5. **API without `ranking`** → exact legacy weights 60/20/20 (riskFit=0). **Discover Rank** always sends `ranking` from DNA → prefs tilt scores.
+5. API without `ranking` → exact legacy weights 60/20/20 (riskFit=0). Discover Rank always sends `ranking` from DNA; default DNA often still resolves to legacy weights until refine tilts fire (§3.3 / §5.4).
+6. Offline `queryScreenerOffline` is **not** Phase A–equivalent (3Y percentile only).
+
+---
 
 ## 13. Quick reference: ranking formula (Phase A)
 
@@ -502,7 +579,7 @@ pool = schemes where:
 
 weights = resolveWeights({ riskPreference, ranking })
   // ranking null → returns 0.6, consistency 0.2, expense 0.2, riskFit 0, amc 0
-  // ranking present → tilt from expensePriority, consistencyPref, risk, horizon, safety, preferredAmcs
+  // ranking present → tilt only when prefs differ from neutral defaults; else same legacy
 
 for each scheme in pool:
   peers = same category in pool
@@ -513,11 +590,11 @@ for each scheme in pool:
   amcPct         = 100 / 50 / 0 for preferred / neutral / avoided
 
   performanceScore = round(Σ weight_i × score_i)
-  riskScore        = volPercentile (display / API; also contributes via riskFit weight)
+  riskScore        = volPercentile (display / API; also contributes via riskFit weight when > 0)
 
 sort by performanceScore desc → top K
 ```
 
 ---
 
-*Phase A implementation: `packages/screener-core/src/{weights,scorers,index}.js`, Discover `buildRankingPrefs`, overlay `data/scheme_meta_overlay.json`.*
+*Sources of truth: `packages/screener-core/src/{weights,scorers,index}.js`, `src/discover-preferences.js` (`buildRankingPrefs` / `buildScreenerPayload`), `services/api/src/lib/snapshot-store.js`, `data/scheme_meta_overlay.json`.*
