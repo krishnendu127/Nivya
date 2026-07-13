@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/v1/auth/**,/v1/me,/v1/auth/token/refresh
+        - id: kyc-service
+          uri: ${KYC_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/v1/kyc/**
+        - id: catalog-service
+          uri: ${CATALOG_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/v1/schemes/**
+        - id: portfolio-service
+          uri: ${PORTFOLIO_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/v1/portfolio/**
+        - id: order-service
+          uri: ${ORDER_SERVICE_URL:http://localhost:8085}
+          predicates:
+            - Path=/v1/orders/**,/v1/consents/**
+        - id: sip-service
+          uri: ${SIP_SERVICE_URL:http://localhost:8086}
+          predicates:
+            - Path=/v1/sips/**,/v1/stps/**,/v1/swps/**
+        - id: screener-service
+          uri: ${SCREENER_SERVICE_URL:http://localhost:8087}
+          predicates:
+            - Path=/v1/screener/**
+        - id: chatbot-service
+          uri: ${CHATBOT_SERVICE_URL:http://localhost:8088}
+          predicates:
+            - Path=/v1/chat/**
+
+nivya:
+  jwt:
+    secret: ${JWT_SECRET:changeme-dev-secret-minimum-32-chars!!}
+    expiry-seconds: 86400
