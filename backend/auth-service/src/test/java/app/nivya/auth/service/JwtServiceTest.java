@@ -1,8 +1,10 @@
 package app.nivya.auth.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.within;
 
 class JwtServiceTest {
@@ -83,5 +86,36 @@ class JwtServiceTest {
 
         assertThat(claims.getIssuedAt().toInstant())
                 .isCloseTo(Instant.now(), within(1, ChronoUnit.SECONDS));
+    }
+
+    @Test
+    void issueAccessToken_shouldBeRejectedWithDifferentSecret() {
+        UUID userId = UUID.randomUUID();
+        String token = jwtService.issueAccessToken(userId);
+
+        SecretKey differentKey = Keys.hmacShaKeyFor(
+                "different-secret-key-minimum-32-chars!!".getBytes(StandardCharsets.UTF_8)
+        );
+
+        assertThatThrownBy(() ->
+                Jwts.parser()
+                        .verifyWith(differentKey)
+                        .build()
+                        .parseSignedClaims(token)
+        ).isInstanceOf(SignatureException.class);
+    }
+
+    @Test
+    void issueAccessToken_shouldThrowWhenTokenExpired() {
+        JwtService shortLivedJwtService = new JwtService(SECRET, -1);
+        UUID userId = UUID.randomUUID();
+        String expiredToken = shortLivedJwtService.issueAccessToken(userId);
+
+        assertThatThrownBy(() ->
+                Jwts.parser()
+                        .verifyWith(signingKey)
+                        .build()
+                        .parseSignedClaims(expiredToken)
+        ).isInstanceOf(ExpiredJwtException.class);
     }
 }
