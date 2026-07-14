@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -20,17 +21,20 @@ public class RefreshTokenService {
     private final UserProfileRepository userProfileRepository;
     private final long inactivityExpiryDays;
     private final long absoluteExpiryDays;
+    private final Clock clock;
 
     public RefreshTokenService(
             RefreshTokenRepository refreshTokenRepository,
             UserProfileRepository userProfileRepository,
             @Value("${nivya.refresh-token.inactivity-expiry-days}") long inactivityExpiryDays,
-            @Value("${nivya.refresh-token.absolute-expiry-days}") long absoluteExpiryDays
+            @Value("${nivya.refresh-token.absolute-expiry-days}") long absoluteExpiryDays,
+            Clock clock
     ) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userProfileRepository = userProfileRepository;
         this.inactivityExpiryDays = inactivityExpiryDays;
         this.absoluteExpiryDays = absoluteExpiryDays;
+        this.clock = clock;
     }
 
     @Transactional
@@ -38,11 +42,12 @@ public class RefreshTokenService {
         UserProfile userProfile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+        Instant now = Instant.now(clock);
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(userProfile);
         refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setLastUsedAt(Instant.now());
-        refreshToken.setExpiresAt(Instant.now().plusSeconds(absoluteExpiryDays * 24 * 3600));
+        refreshToken.setLastUsedAt(now);
+        refreshToken.setExpiresAt(now.plusSeconds(absoluteExpiryDays * 24 * 3600));
 
         return refreshTokenRepository.save(refreshToken);
     }
@@ -52,7 +57,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
 
-        Instant now = Instant.now();
+        Instant now = Instant.now(clock);
 
         if (now.isAfter(refreshToken.getExpiresAt())) {
             refreshTokenRepository.delete(refreshToken);

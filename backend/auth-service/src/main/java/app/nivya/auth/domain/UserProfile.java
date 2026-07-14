@@ -4,6 +4,8 @@ import app.nivya.auth.crypto.PanEncryptionConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -27,6 +29,7 @@ public class UserProfile {
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "kyc_status", nullable = false)
     private KycStatus kycStatus = KycStatus.pending;
 
