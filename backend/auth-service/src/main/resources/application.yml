@@ -22,7 +22,7 @@ nivya:
     access-token-expiry-seconds: 3600
   otp:
     expiry-seconds: 300
-    demo-otp: ${DEMO_OTP:123456}
+    dev-otp: ${DEV_OTP:123456}
   refresh-token:
     inactivity-expiry-days: 7
     absolute-expiry-days: 90

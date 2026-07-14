@@ -32,11 +32,11 @@ public class AuthService {
     }
 
     public void sendOtp(String phoneNumber) {
-        otpService.send(phoneNumber);
+        otpService.sendOtp(phoneNumber);
     }
 
     public AuthResponse verifyOtp(String phoneNumber, String otp) {
-        if (!otpService.verify(phoneNumber, otp)) {
+        if (!otpService.verifyOtp(phoneNumber, otp)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired OTP");
         }
 
