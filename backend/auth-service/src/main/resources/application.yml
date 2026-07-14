@@ -1,0 +1,30 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/nivya_auth}
+    username: ${AUTH_DB_USER:postgres}
+    password: ${AUTH_DB_PASS:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+nivya:
+  jwt:
+    secret: ${JWT_SECRET:changeme-dev-secret-minimum-32-chars!!}
+    access-token-expiry-seconds: 3600
+  otp:
+    expiry-seconds: 300
+    demo-otp: ${DEMO_OTP:123456}
+  refresh-token:
+    inactivity-expiry-days: 7
+    absolute-expiry-days: 90
+  pan:
+    encryption-key: ${NIVYA_PAN_ENCRYPTION_KEY:dGhpcyBpcyBhIDMyLWJ5dGUgZGV2IGtleQ==}
