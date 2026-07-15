@@ -1,4 +1,4 @@
-package app.nivya.auth.crypto;
+package app.nivya.common.crypto;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

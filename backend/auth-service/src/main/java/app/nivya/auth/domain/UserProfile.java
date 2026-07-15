@@ -1,6 +1,6 @@
 package app.nivya.auth.domain;
 
-import app.nivya.auth.crypto.PanEncryptionConverter;
+import app.nivya.common.crypto.PanEncryptionConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
